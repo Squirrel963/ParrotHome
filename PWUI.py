@@ -6,6 +6,7 @@ import streamlit_extras
 from streamlit_card import card
 import json
 import requests
+import time
 requests.packages.urllib3.disable_warnings()
 def get_data_from_api(api_url):  
     # 发送GET请求  
@@ -186,6 +187,7 @@ with tab2:
         if all_fine:
             for sogs in sorted(weather_helper.keys()):
                 wearther_sogs(suggestion_tans[sogs], weather_helper[sogs]['brief'], weather_helper[sogs]['details'])
+                time.sleep(0.1)
 
     with info2:
         if all_fine:
@@ -193,7 +195,7 @@ with tab2:
                 st.map(data={'lat': [earth_location["latitude"]], 'lon': [earth_location["longitude"]]}, zoom=10)
             with st.container(border=True):
                 st.subheader("您的位置信息")
-                st.markdown(f'''维度：{earth_location["latitude"]}  
+                st.markdown(f'''纬度：{earth_location["latitude"]}  
 经度：{earth_location["longitude"]}''')
     #st.write(weather)
 
