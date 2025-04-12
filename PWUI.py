@@ -1,9 +1,20 @@
 import http
 import streamlit as st
 from streamlit_elements import elements, mui, html
+from streamlit_geolocation import streamlit_geolocation
 import streamlit_extras
 from streamlit_card import card
 import json
+import requests
+requests.packages.urllib3.disable_warnings()
+def get_data_from_api(api_url):  
+    # 发送GET请求  
+    response = requests.get(api_url)  
+    data = response.json()  
+    return data
+
+#这个api是免费的，你盗用了也没意义，想用还不如自己注册一个（起码你能光明正大的用），何必提心吊胆地用？--wycc
+api_key = "SSLJli7F2PINakHcG"
 
 st.set_page_config(
     page_title="Parrot导航页",
@@ -39,6 +50,50 @@ engine_links = {
           'hold':"%20"},
     'yandex':{'text':"https://yandex.com/search/?text=",
             'hold':"%20"}
+}
+
+weather_code = {
+    0:':sun:',
+    1:':crescent_moon:',
+    2:':sun:',
+    3:':crescent_moon:',
+    4:':sun_behind_large_cloud:',
+    5:':sun_behind_cloud:',
+    6:':sun_behind_cloud:',
+    7:':sun_behind_small_cloud:',
+    8:':sun_behind_small_cloud:',
+    9:':cloud:',
+    10:':sun_behind_rain_cloud:',
+    11:':cloud_with_lightning_and_rain:',
+    31:':fog:'
+}
+
+suggestion_tans = {
+    'ac':':level_slider: 空调',
+    'air_pollution':':dashing_away: 空气污染',
+    'airing':':sponge: 晾晒',
+    'allergy':':test_tube: 过敏',
+    'beer':':beer_mug: 喝啤酒',
+    'boating':':canoe: 划船',
+    'car_washing':':shower: 洗车',
+    'chill':':thermometer: 风寒',
+    'comfort':':books: 舒适度',
+    'dating':':heart_with_ribbon: 约会',
+    'dressing':':t_shirt: 穿衣',
+    'fishing':':fish: 钓鱼',
+    'flu':':pill: 感冒',
+    'kiteflying':':kite: 放风筝',
+    'makeup':':lipstick: 化妆',
+    'mood':':sunglasses: 心情',
+    'morning_sport':':running_shirt: 晨练',
+    'road_condition':':taxi: 路况',
+    'shopping':':shopping_cart: 购物',
+    'sport':':soccer_ball: 运动',
+    'sunscreen':':lotion_bottle: 防晒',
+    'traffic':':vertical_traffic_light: 交通',
+    'travel':':world_map: 旅游',
+    'umbrella':':umbrella: 雨伞',
+    'uv':':umbrella_on_ground: 紫外线'
 }
 
 tans = {
@@ -91,8 +146,51 @@ with tab1:
         #st.write(link)
         st.link_button(f":material/launch: 立即搜索：{engine}", f"{link}",disabled=cantserc)
     
+def wearther_sogs(name ,brief, details):
+    with st.expander(f"{name}：{brief}"):
+        st.write(details)
+
 with tab2:
-    st.write("敬请期待。。。")
+    info1, info2 = st.columns(2)
+    with info1:
+        all_fine = False
+        with st.container(border=True):
+            loc1, loc2 = st.columns([0.05,0.95])
+            with st.spinner("正在获取数据..."):
+                with loc1:
+                    earth_location = streamlit_geolocation()
+                with loc2:
+                    st.text("点按左侧按钮以允许PH获取您的位置信息")
+                location = f'{earth_location["latitude"]}:{earth_location["longitude"]}'
+                #location = get_data_from_api(f"https://api.seniverse.com/v3/location/search.json?key={api_key}&q={earth_location}")["results"][0]['id']
+                try:
+                    weather = get_data_from_api(f"https://api.seniverse.com/v3/weather/now.json?key={api_key}&location={location}&language=zh-Hans&unit=c")["results"][0]
+                    weather_helper = get_data_from_api(f"https://api.seniverse.com/v3/life/suggestion.json?key={api_key}&location={location}&language=zh-Hans&days=1")["results"][0]["suggestion"][0]
+                    weather_helper.pop('date')
+                    all_fine = True
+                except:
+                    st.write(":material/gps_off: 未获取位置信息")
+        if all_fine:
+            with st.container(border=True):
+                try:
+                    st.header(f"{weather_code[int(weather['now']['code'])]} {weather['now']['text']}     {weather['now']['temperature']}℃")
+                except:
+                    st.header(f"{weather['now']['text']}     {weather['now']['temperature']}℃")
+                st.subheader(f":material/room: {weather['location']['path']}")
+                st.caption(f'最后更新：{weather["last_update"]} （数据来自"心知天气"）')
+        if all_fine:
+            for sogs in sorted(weather_helper.keys()):
+                wearther_sogs(suggestion_tans[sogs], weather_helper[sogs]['brief'], weather_helper[sogs]['details'])
+
+    with info2:
+        if all_fine:
+            with st.container(border=True):
+                st.map(data={'lat': [earth_location["latitude"]], 'lon': [earth_location["longitude"]]}, zoom=10)
+            with st.container(border=True):
+                st.subheader("您的位置信息")
+                st.markdown(f'''维度：{earth_location["latitude"]}  
+经度：{earth_location["longitude"]}''')
+    #st.write(weather)
 
 with tab3:
     serch = st.text_input("搜索")
