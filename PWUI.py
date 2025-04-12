@@ -115,11 +115,11 @@ with tab4:
     friends = {
         'SAR网盘':{
             'uri':"https://frp-any.top:32998",
-            'dec':"纯公益不限速云盘"
+            'des':"纯公益不限速云盘"
         },
         'ParrotOCE':{
             'uri':"https://parrotoce.streamlit.app",
-            'dec':"在线python环境"
+            'des':"在线python环境"
         }
     }
     li1, li2, li3, li4 = st.columns(4)
