@@ -177,6 +177,7 @@ with tab2:
                 except:
                     st.write(":material/gps_off: 未获取位置信息")
         if all_fine:
+            st.toast('已读取您的位置信息！', icon=':material/check:')
             with st.container(border=True):
                 try:
                     st.header(f"{weather_code[int(weather['now']['code'])]} {weather['now']['text']}     {weather['now']['temperature']}℃")
@@ -187,7 +188,7 @@ with tab2:
         if all_fine:
             for sogs in sorted(weather_helper.keys()):
                 wearther_sogs(suggestion_tans[sogs], weather_helper[sogs]['brief'], weather_helper[sogs]['details'])
-                time.sleep(0.1)
+                time.sleep(0.05)
 
     with info2:
         if all_fine:
@@ -200,7 +201,7 @@ with tab2:
     #st.write(weather)
 
 with tab3:
-    serch = st.text_input("搜索")
+    serch = st.text_input(":material/search: 搜索")
     def webshows(name, description, uri):
         with st.container(border=True):
             st.write(f"{name}")
@@ -273,11 +274,11 @@ with tab5:
             report_text = st.text_area("详细信息",help='''不知道填什么？ 可填写目标收录网站的违规行为''',placeholder='选填')
             st.link_button(":material/email: 发送邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH建议：{report_types}&body=板块：{report_plate}  地址：{report_url}  详细信息：{report_text}", disabled=(report_url==""))
         else:
-            report_text = st.text_area("详细信息",help='''不知道填什么？ 可填写某功能出现的异常现象''',placeholder='必填')
+            report_text = st.text_area("详细信息",help='''不知道填什么？ 可填写某功能出现的异常现象或你需要的新功能或对已有的功能提出建议''',placeholder='必填')
             st.link_button(":material/email: 发送邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH建议：{report_types}&body=详细信息：{report_text}", disabled=(report_text==""))
 
 with tab6:
-    st.subheader(" 关于Parrot Home")
+    st.subheader(" 关于 Parrot Home")
     with st.container(border=True):
         st.markdown('''##### 概述
 本站是由streamlit编写的导航页面，旨在提供公益导航服务  
@@ -293,3 +294,5 @@ with tab6:
 本站点仅提供第三方网页跳转服务  
 本身不存储任何用户数据及服务用数据  
 数据均来自第三方，与本站无关''')
+    if st.button("气球！",use_container_width=True):
+        st.balloons()
