@@ -177,7 +177,7 @@ with tab2:
                 except:
                     st.write(":material/gps_off: 未获取位置信息")
         if all_fine:
-            st.toast('已读取您的位置信息！', icon=':material/check:')
+            #st.toast('已读取您的位置信息！', icon=':material/check:')
             with st.container(border=True):
                 try:
                     st.header(f"{weather_code[int(weather['now']['code'])]} {weather['now']['text']}     {weather['now']['temperature']}℃")
