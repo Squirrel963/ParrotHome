@@ -5,8 +5,6 @@ import streamlit_extras
 from streamlit_card import card
 import json
 
-version = "1.41"
-
 st.set_page_config(
     page_title="Parrot导航页",
     page_icon="🦜",
@@ -57,6 +55,18 @@ except Exception as e:
         ':material/warning: 网站错误': {
             'url': '',
             'description': f'{e}'
+        }
+    }
+
+try:
+    with open('friends.json', 'r', encoding='utf-8') as file:
+        friends = json.load(file)
+except Exception as e:
+    friends = {
+        '网站错误': {
+            'uri': '',
+            'des': f'{e}',
+            'image': ''
         }
     }
 
@@ -112,30 +122,54 @@ with tab3:
                         webshows(website_name,websites[website_name]['description'],websites[website_name]['url'])
             i += 1
 with tab4:
-    friends = {
-        'SAR网盘':{
-            'uri':"https://frp-any.top:32998",
-            'des':"纯公益不限速云盘"
-        },
-        'ParrotOCE':{
-            'uri':"https://parrotoce.streamlit.app",
-            'des':"在线python环境"
-        }
-    }
     li1, li2, li3, li4 = st.columns(4)
-    def yqshows(name, description, uri):
+    def yqshows(name, description, uri, imag):
         card(
             title=name,
             text=description,
-            image="",
+            image=imag,
             url=uri,
         )
-    with li1:
-        for friends_name in sorted(friends.keys()):
-            yqshows(friends_name, friends[friends_name]['des'], friends[friends_name]['uri'])
+    jwidth = (len(friends) // 4) + 1
+    j = 1
+    for friends_name in friends.keys():
+        if j <= jwidth:
+            with li1:
+                yqshows(friends_name, friends[friends_name]['des'], friends[friends_name]['uri'], friends[friends_name]['image'])
+        elif j <= jwidth*2:
+            with li2:
+                yqshows(friends_name, friends[friends_name]['des'], friends[friends_name]['uri'], friends[friends_name]['image'])
+        elif j <= jwidth*3:
+            with li3:
+                yqshows(friends_name, friends[friends_name]['des'], friends[friends_name]['uri'], friends[friends_name]['image'])
+        elif j <= jwidth*4:
+            with li4:
+                yqshows(friends_name, friends[friends_name]['des'], friends[friends_name]['uri'], friends[friends_name]['image'])
+        j += 1
 
 with tab5:
-    st.write(f"敬请期待...")
+    with st.container(border=True):
+        st.caption(":material/move_to_inbox: 网站收录内容")
+        uul_url = st.text_input("网址")
+        uul_des = st.text_input("简介")
+        st.link_button(":material/how_to_vote: 发送投稿邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH网站收录&body=网址：{uul_url}  简介：{uul_des}", disabled=(uul_url==""))
+    with st.container(border=True):
+        st.caption(":material/flag: 站点问题反馈")
+        report_types = st.selectbox("类型", [
+            'Bug(漏洞，使用问题)',
+            '功能建议(新增，修改)',
+            '内容问题(侵权，不适宜内容)'
+
+        ])
+        if report_types == '内容问题(侵权，不适宜内容)':
+            report_plate = st.selectbox("板块",['网站收录','友链'])
+            report_url = st.text_input("目标地址",placeholder='必填')
+        if report_types == '内容问题(侵权，不适宜内容)':
+            report_text = st.text_area("详细信息",help='''不知道填什么？ 可填写目标收录网站的违规行为''',placeholder='选填')
+            st.link_button(":material/email: 发送邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH建议：{report_types}&body=板块：{report_plate}  地址：{report_url}  详细信息：{report_text}", disabled=(report_url==""))
+        else:
+            report_text = st.text_area("详细信息",help='''不知道填什么？ 可填写某功能出现的异常现象''',placeholder='必填')
+            st.link_button(":material/email: 发送邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH建议：{report_types}&body=详细信息：{report_text}", disabled=(report_text==""))
 
 with tab6:
     st.subheader(" 关于Parrot Home")
@@ -145,6 +179,8 @@ with tab6:
 包含多搜索引擎跳转、网址合集、资讯卡片等''')
     with st.container(border=True):
         st.markdown('''##### 运营
+负责人&站长：wycc  
+托管账户提供者：squirrel963（github）  
 运行：本站点托管于streamlit社区云  
 开源许可证：GPL-3.0''')
     with st.container(border=True):
