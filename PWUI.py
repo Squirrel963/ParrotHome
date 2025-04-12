@@ -182,7 +182,7 @@ with tab2:
                 except:
                     st.header(f"{weather['now']['text']}     {weather['now']['temperature']}℃")
                 st.subheader(f":material/room: {weather['location']['path']}")
-                st.caption(f'最后更新：{weather["last_update"]} （数据来自"心知天气"）')
+                st.caption(f'最后更新：{weather["last_update"].replace("T", " ")} （数据来自"心知天气"）')
         if all_fine:
             for sogs in sorted(weather_helper.keys()):
                 wearther_sogs(suggestion_tans[sogs], weather_helper[sogs]['brief'], weather_helper[sogs]['details'])
