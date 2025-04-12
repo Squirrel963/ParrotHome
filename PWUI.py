@@ -166,7 +166,12 @@ with tab2:
                 try:
                     weather = get_data_from_api(f"https://api.seniverse.com/v3/weather/now.json?key={api_key}&location={location}&language=zh-Hans&unit=c")["results"][0]
                     weather_helper = get_data_from_api(f"https://api.seniverse.com/v3/life/suggestion.json?key={api_key}&location={location}&language=zh-Hans&days=1")["results"][0]["suggestion"][0]
-                    weather_helper.pop('date')
+                    badguy = ['date','sport','air_pollution','dressing','beer','morning_sport','shopping']
+                    for i in badguy:
+                        try:
+                            weather_helper.pop(i)
+                        except:
+                            pass
                     all_fine = True
                 except:
                     st.write(":material/gps_off: 未获取位置信息")
