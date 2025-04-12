@@ -112,6 +112,16 @@ with tab3:
                         webshows(website_name,websites[website_name]['description'],websites[website_name]['url'])
             i += 1
 with tab4:
+    friends = {
+        'SAR网盘':{
+            'uri':"https://frp-any.top:32998",
+            'dec':"纯公益不限速云盘"
+        },
+        'ParrotOCE':{
+            'uri':"https://parrotoce.streamlit.app",
+            'dec':"在线python环境"
+        }
+    }
     li1, li2, li3, li4 = st.columns(4)
     def yqshows(name, description, uri):
         card(
@@ -121,7 +131,8 @@ with tab4:
             url=uri,
         )
     with li1:
-        yqshows("SAR网盘", "纯公益不限速云盘","https://frp-any.top:32998")
+        for friends_name in sorted(friends.keys()):
+            yqshows(friends_name, friends[friends_name]['des'], friends[friends_name]['uri'])
 
 with tab5:
     st.write(f"敬请期待...")
