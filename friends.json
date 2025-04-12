@@ -1,0 +1,12 @@
+{
+    "SAR网盘": {
+        "uri": "https://frp-any.top:32998",
+        "des": "纯公益不限速云盘",
+	"image": ""
+    },
+    "ParrotOCE": {
+        "uri": "https://parrotoce.streamlit.app",
+        "des": "在线python环境",
+	"image": ""
+    }
+}

@@ -150,8 +150,8 @@ with tab4:
 with tab5:
     with st.container(border=True):
         st.caption(":material/move_to_inbox: 网站收录内容")
-        uul_url = st.text_input("网址")
-        uul_des = st.text_input("简介")
+        uul_url = st.text_input("网址",placeholder='必填')
+        uul_des = st.text_input("简介",placeholder='选填')
         st.link_button(":material/how_to_vote: 发送投稿邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH网站收录&body=网址：{uul_url}  简介：{uul_des}", disabled=(uul_url==""))
     with st.container(border=True):
         st.caption(":material/flag: 站点问题反馈")
