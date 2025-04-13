@@ -15,7 +15,7 @@ def get_data_from_api(api_url):
     data = response.json()  
     return data
 
-ver = '20250413_1127'
+ver = '20250413_P0131'
 
 #这个api是免费的，盗用了也没意义，想用还不如自己注册一个（起码你能光明正大的用）
 api_key = "SSLJli7F2PINakHcG"
@@ -27,6 +27,10 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
+caches = ['weatherloaded','weather','weather_helper']
+for i in caches:
+    if i not in st.session_state:
+        st.session_state[i] = False
 
 @st.dialog("发生错误！")
 def vote(text:str):
@@ -186,7 +190,6 @@ def wearther_sogs(name ,brief, details):
 with tab2:
     info1, info2 = st.columns(2)
     with info1:
-        all_fine = False
         with st.container(border=True):
             loc1, loc2 = st.columns([0.05,0.95])
             with st.spinner("正在获取数据..."):
@@ -196,38 +199,40 @@ with tab2:
                     st.text("点按左侧按钮以允许PH获取您的位置信息")
                 location = f'{earth_location["latitude"]}:{earth_location["longitude"]}'
                 #location = get_data_from_api(f"https://api.seniverse.com/v3/location/search.json?key={api_key}&q={earth_location}")["results"][0]['id']
-                try:
-                    start_get = datetime.now()
-                    weather = get_data_from_api(f"https://api.seniverse.com/v3/weather/now.json?key={api_key}&location={location}&language=zh-Hans&unit=c")["results"][0]
-                    weather_helper = get_data_from_api(f"https://api.seniverse.com/v3/life/suggestion.json?key={api_key}&location={location}&language=zh-Hans&days=1")["results"][0]["suggestion"][0]
-                    badguy = ['date','sport','air_pollution','dressing','beer','morning_sport','shopping']
-                    for i in badguy:
-                        try:
-                            weather_helper.pop(i)
-                        except:
-                            pass
-                    all_fine = True
-                    end_get = datetime.now()
-                    times = end_get - start_get
-                    st.write(f"数据获取耗时：{times.total_seconds()}s")
-                except:
-                    st.write(":material/gps_off: 未获取位置信息")
-        if all_fine:
+                if not st.session_state['weatherloaded']:
+                    try:
+                        start_get = datetime.now()
+                        weather = get_data_from_api(f"https://api.seniverse.com/v3/weather/now.json?key={api_key}&location={location}&language=zh-Hans&unit=c")["results"][0]
+                        weather_helper = get_data_from_api(f"https://api.seniverse.com/v3/life/suggestion.json?key={api_key}&location={location}&language=zh-Hans&days=1")["results"][0]["suggestion"][0]
+                        badguy = ['date','sport','air_pollution','dressing','beer','morning_sport','shopping']
+                        for i in badguy:
+                            try:
+                                weather_helper.pop(i)
+                            except:
+                                pass
+                        end_get = datetime.now()
+                        times = end_get - start_get
+                        st.write(f"本次数据获取耗时：{times.total_seconds()}s")
+                        st.session_state['weatherloaded'] = True
+                        st.session_state['weather'] = weather
+                        st.session_state['weather_helper'] = weather_helper
+                    except:
+                        st.write(":material/gps_off: 未获取位置信息")
+        if st.session_state['weatherloaded']:
             #st.toast('已读取您的位置信息！', icon=':material/check:')
             with st.container(border=True):
                 try:
-                    st.header(f"{weather_code[int(weather['now']['code'])]} {weather['now']['text']}     {weather['now']['temperature']}℃")
+                    st.header(f"{weather_code[int(st.session_state['weather']['now']['code'])]} {st.session_state['weather']['now']['text']}     {st.session_state['weather']['now']['temperature']}℃")
                 except:
-                    st.header(f"{weather['now']['text']}     {weather['now']['temperature']}℃")
-                st.subheader(f":material/room: {weather['location']['path']}")
-                st.caption(f'最后更新：{weather["last_update"].replace("T", " ")} （数据来自"心知天气"）')
-        if all_fine:
-            for sogs in sorted(weather_helper.keys()):
-                wearther_sogs(suggestion_tans[sogs], weather_helper[sogs]['brief'], weather_helper[sogs]['details'])
+                    st.header(f"{st.session_state['weather']['now']['text']}     {st.session_state['weather']['now']['temperature']}℃")
+                st.subheader(f":material/room: {st.session_state['weather']['location']['path']}")
+                st.caption(f'最后更新：{st.session_state["weather"]["last_update"].replace("T", " ")} （数据来自"心知天气"）')
+        if st.session_state['weatherloaded']:
+            for sogs in sorted(st.session_state['weather_helper'].keys()):
+                wearther_sogs(suggestion_tans[sogs], st.session_state['weather_helper'][sogs]['brief'], st.session_state['weather_helper'][sogs]['details'])
                 #time.sleep(0.05)
-
     with info2:
-        if all_fine:
+        if st.session_state['weatherloaded']:
             with st.container(border=True):
                 st.map(data={'lat': [earth_location["latitude"]], 'lon': [earth_location["longitude"]]}, zoom=10)
             with st.container(border=True):
