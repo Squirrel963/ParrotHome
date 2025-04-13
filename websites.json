@@ -235,4 +235,24 @@
 	"url": "https://photokit.com/?lang=zh",
 	"description": "在线图片编辑"
 }
+"在线字体转换": {
+	"url": "https://exotictext.com/zh-cn/",
+	"description": "只支持英文字母"
+},
+"MC日志分析": {
+	"url": "https://mclo.gs/",
+	"description": "自动分析日志及崩溃原因"
+},
+"UUP dump系统镜像站": {
+	"url": "https://uupdump.net/",
+	"description": "windows镜像"
+},
+"宝儿谷": {
+	"url": "https://baoergu.com/",
+	"description": "在线网盘地址直连解析"
+},
+"中国内网穿透联盟管理系统": {
+	"url": "https://www.内网穿透.中国",
+	"description": "~"
+}
 }
