@@ -15,7 +15,7 @@ def get_data_from_api(api_url):
     data = response.json()  
     return data
 
-ver = '20250413_P0300'
+ver = '20250413_P0305'
 
 #这个api是免费的，盗用了也没意义，想用还不如自己注册一个（起码你能光明正大的用）
 api_key = "SSLJli7F2PINakHcG"
@@ -254,7 +254,11 @@ with tab3:
             st.link_button(":material/launch: 前往",url=uri)
     webli1, webli2, webli3, webli4 = st.columns(4)
     #with webli1:
-    width = (len(websites) // 4) + int(not beautiful)
+    if bool(serch):
+        more_width = 100
+    else:
+        more_width = 0
+    width = (len(websites) // 4) + int(not beautiful) + more_width
     i = 1
     with st.spinner("加载中..."):
         for website_name in sorted(websites.keys()):
