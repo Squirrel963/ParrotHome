@@ -15,6 +15,8 @@ def get_data_from_api(api_url):
     data = response.json()  
     return data
 
+ver = '20250413_1127'
+
 #这个api是免费的，盗用了也没意义，想用还不如自己注册一个（起码你能光明正大的用）
 api_key = "SSLJli7F2PINakHcG"
 
@@ -145,8 +147,8 @@ with tab1:
             )
         with st.container(border=True):
             st.caption("搜索结果过滤选项")
-            if st.toggle("关注名单",help='搜索引擎将会突出显示包含设置词汇的搜索结果'):
-                white_list = st_tags(label='词汇突出',text='按下enter将当前输入转换一个词')
+            if st.toggle("关注名单",help='搜索引擎将会优先显示包含设置词汇的搜索结果'):
+                white_list = st_tags(label='优先词汇',text='按下enter将当前输入转换一个词')
                 if len(white_list) != 0:
                     white_list = f" %2B{' %2B'.join(white_list)}"
                 else:
