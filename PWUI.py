@@ -277,7 +277,7 @@ with tab4:
             image=imag,
             url=uri,
         )
-    jwidth = (len(friends) // 4)
+    jwidth = (len(friends) // 4) + 1
     j = 1
     for friends_name in friends.keys():
         if j <= jwidth:
