@@ -2,11 +2,12 @@ import http
 import streamlit as st
 from streamlit_elements import elements, mui, html
 from streamlit_geolocation import streamlit_geolocation
+from streamlit_tags import st_tags
 import streamlit_extras
 from streamlit_card import card
 import json
 import requests
-import time
+from datetime import datetime
 requests.packages.urllib3.disable_warnings()
 def get_data_from_api(api_url):  
     # 发送GET请求  
@@ -14,7 +15,7 @@ def get_data_from_api(api_url):
     data = response.json()  
     return data
 
-#这个api是免费的，你盗用了也没意义，想用还不如自己注册一个（起码你能光明正大的用），何必提心吊胆地用？--wycc
+#这个api是免费的，盗用了也没意义，想用还不如自己注册一个（起码你能光明正大的用）
 api_key = "SSLJli7F2PINakHcG"
 
 st.set_page_config(
@@ -24,10 +25,17 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
+
 @st.dialog("发生错误！")
 def vote(text:str):
     st.error(f"加载文件时出现问题，请联系网站管理员")
     st.write(f"错误：{text}")
+
+@st.dialog("感谢推荐！")
+def share():
+    st.balloons()
+    st.write("地址：")
+    st.code(f"https://parrothome.streamlit.app/")
 
 st.title("Parrot 导航页")
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([":material/search: 搜索引擎", ":material/layers: 资讯卡片", ":material/near_me: 网站收录", ":material/local_cafe: 友情链接", ":material/check: 帮助改进", ":material/share: 关于本站"])
@@ -135,16 +143,38 @@ with tab1:
                 ":material/description: 搜索项目",
                 [":material/explore: 默认", ":material/wallpaper: 图片", ":material/movie: 视频"],
             )
+        with st.container(border=True):
+            st.caption("搜索结果过滤选项")
+            if st.toggle("关注名单",help='搜索引擎将会突出显示包含设置词汇的搜索结果'):
+                white_list = st_tags(label='词汇突出',text='按下enter将当前输入转换一个词')
+                if len(white_list) != 0:
+                    white_list = f" %2B{' %2B'.join(white_list)}"
+                else:
+                    white_list = ""
+            else:
+                white_list = ""
+            if st.toggle("黑名单",help='搜索引擎将会过滤掉包含设置词汇的搜索结果'):
+                black_list = st_tags(label='词汇过滤',text='按下enter将当前输入转换一个词',suggestions=['csdn','京东','淘宝'])
+                if len(black_list) != 0:
+                    black_list = f" -{' -'.join(black_list)}"
+                else:
+                    black_list = ""
+            else:
+                black_list = ""
+            #st.write(black_list)
+            #st.write(white_list)
     with col1:
         something = st.text_input("搜索内容").replace(" ",f'{engine_links[engine]["hold"]}').replace("+","%2B")
         cantserc = False
         if tans[mode] in engine_links[engine]:
-            link = f"{engine_links[engine][tans[mode]]}{something}"
+            link = f"{engine_links[engine][tans[mode]]}{something}{engine_links[engine]['hold']}{white_list}{black_list}"
         else:
             link = "None"
             cantserc = True
             col2.warning("当前搜索引擎不支持搜索该项目")
         #st.write(link)
+        if something == "":
+            cantserc = True
         st.link_button(f":material/launch: 立即搜索：{engine}", f"{link}",disabled=cantserc)
     
 def wearther_sogs(name ,brief, details):
@@ -165,6 +195,7 @@ with tab2:
                 location = f'{earth_location["latitude"]}:{earth_location["longitude"]}'
                 #location = get_data_from_api(f"https://api.seniverse.com/v3/location/search.json?key={api_key}&q={earth_location}")["results"][0]['id']
                 try:
+                    start_get = datetime.now()
                     weather = get_data_from_api(f"https://api.seniverse.com/v3/weather/now.json?key={api_key}&location={location}&language=zh-Hans&unit=c")["results"][0]
                     weather_helper = get_data_from_api(f"https://api.seniverse.com/v3/life/suggestion.json?key={api_key}&location={location}&language=zh-Hans&days=1")["results"][0]["suggestion"][0]
                     badguy = ['date','sport','air_pollution','dressing','beer','morning_sport','shopping']
@@ -174,6 +205,9 @@ with tab2:
                         except:
                             pass
                     all_fine = True
+                    end_get = datetime.now()
+                    times = end_get - start_get
+                    st.write(f"数据获取耗时：{times.total_seconds()}s")
                 except:
                     st.write(":material/gps_off: 未获取位置信息")
         if all_fine:
@@ -188,7 +222,7 @@ with tab2:
         if all_fine:
             for sogs in sorted(weather_helper.keys()):
                 wearther_sogs(suggestion_tans[sogs], weather_helper[sogs]['brief'], weather_helper[sogs]['details'])
-                time.sleep(0.05)
+                #time.sleep(0.05)
 
     with info2:
         if all_fine:
@@ -278,21 +312,29 @@ with tab5:
             st.link_button(":material/email: 发送邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH建议：{report_types}&body=详细信息：{report_text}", disabled=(report_text==""))
 
 with tab6:
+    start_time = datetime(2025, 4, 11, 13, 20, 5)
+    end_time = datetime.now()
+    time_diff = end_time - start_time
+    diff_days = time_diff.days
+    diff_seconds = time_diff.seconds
+    diff_hours = diff_seconds // 3600
+    diff_minutes = (diff_seconds % 3600) // 60
     st.subheader(" 关于 Parrot Home")
     with st.container(border=True):
         st.markdown('''##### 概述
 本站是由streamlit编写的导航页面，旨在提供公益导航服务  
 包含多搜索引擎跳转、网址合集、资讯卡片等''')
     with st.container(border=True):
-        st.markdown('''##### 运营
+        st.markdown(f'''##### 运营
 负责人&站长：wycc  
 托管账户提供者：squirrel963（github）  
 运行：本站点托管于streamlit社区云  
+总服务时长：{diff_days}d {diff_hours}h {diff_minutes}min  
 开源许可证：GPL-3.0''')
     with st.container(border=True):
         st.markdown('''##### 免责声明
 本站点仅提供第三方网页跳转服务  
 本身不存储任何用户数据及服务用数据  
 数据均来自第三方，与本站无关''')
-    if st.button("气球！",use_container_width=True):
-        st.balloons()
+    if st.button(":material/share: 分享该站点！",use_container_width=True):
+        share()
