@@ -247,10 +247,13 @@ with tab2:
 with tab3:
     serch = st.text_input(":material/search: 搜索", placeholder='搜索网址名称或介绍', label_visibility='collapsed')
     beautiful = st.toggle("整齐排版（强迫症快乐模式）", value=True,help='通过忽略底部单独突出网址来使底部平整；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
-    def webshows(name, description, uri):
+    def webshows(name, description, uri, serchmode:bool):
         with st.container(border=True):
-            st.write(f"{name}")
-            st.text(description)
+            if not serchmode:
+                st.write(f"{name}")
+                st.text(description)
+            else:
+                st.write(f"{name} ：{description}")
             st.link_button(":material/launch: 前往",url=uri)
     webli1, webli2, webli3, webli4 = st.columns(4)
     #with webli1:
@@ -260,21 +263,22 @@ with tab3:
         more_width = 0
     width = (len(websites) // 4) + int(not beautiful) + more_width
     i = 1
+    serch_mode = bool(serch)
     with st.spinner("加载中..."):
         for website_name in sorted(websites.keys()):
             if serch.lower() in website_name.lower() or serch == "" or serch.lower() in websites[website_name]['description'].lower():
                 if i <= width:
                     with webli1:
-                        webshows(website_name,websites[website_name]['description'],websites[website_name]['url'])
+                        webshows(website_name,websites[website_name]['description'],websites[website_name]['url'],serch_mode)
                 elif i <= width*2:
                     with webli2:
-                        webshows(website_name,websites[website_name]['description'],websites[website_name]['url'])
+                        webshows(website_name,websites[website_name]['description'],websites[website_name]['url'],serch_mode)
                 elif i <= width*3:
                     with webli3:
-                        webshows(website_name,websites[website_name]['description'],websites[website_name]['url'])
+                        webshows(website_name,websites[website_name]['description'],websites[website_name]['url'],serch_mode)
                 elif i <= width*4:
                     with webli4:
-                        webshows(website_name,websites[website_name]['description'],websites[website_name]['url'])
+                        webshows(website_name,websites[website_name]['description'],websites[website_name]['url'],serch_mode)
             i += 1
 with tab4:
     li1, li2, li3, li4 = st.columns(4)
