@@ -211,8 +211,28 @@
 	"url": "https://narrow.one/",
 	"description": "玩法：夺旗、射击"
 },
-"PCL2启动器下载": {
+"PCL2启动器官方蓝奏云网盘下载": {
 	"url": "https://ltcat.lanzouv.com/b0aj6gsid",
 	"description": "密码：pcl2"
-}
+},
+"嵌入式 Linux Wiki": {
+	"url": "https://elinux.org/Main_Page",
+	"description": "有关嵌入式系统中 Linux 的开发和使用的信息"
+},
+"支付宝到账音效模拟器": {
+	"url": "https://saythemoney.github.io/#",
+	"description": "输入金额，即刻到账！"
+},
+"黑客模拟器P": {
+	"url": "https://hackertyper.com/",
+	"description": "随便按就能键盘装X"
+},
+"抽象画模拟器": {
+	"url": "https://jacksonpollock.org/",
+	"description": "单击换色，双击清空"
+},
+"PhotoKit在线P图": {
+	"url": "https://photokit.com/?lang=zh",
+	"description": "在线图片编辑"
+},
 }
