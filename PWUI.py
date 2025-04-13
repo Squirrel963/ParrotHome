@@ -250,7 +250,7 @@ with tab3:
             st.link_button(":material/launch: 前往",url=uri)
     webli1, webli2, webli3, webli4 = st.columns(4)
     #with webli1:
-    width = (len(websites) // 4) + 1
+    width = (len(websites) // 4)
     i = 1
     with st.spinner("加载中..."):
         for website_name in sorted(websites.keys()):
