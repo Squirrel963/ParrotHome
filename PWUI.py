@@ -15,7 +15,7 @@ def get_data_from_api(api_url):
     data = response.json()  
     return data
 
-ver = '20250413_P0235'
+ver = '20250413_P0255'
 
 #这个api是免费的，盗用了也没意义，想用还不如自己注册一个（起码你能光明正大的用）
 api_key = "SSLJli7F2PINakHcG"
@@ -177,8 +177,11 @@ with tab1:
         else:
             link = "None"
             cantserc = True
-            col2.warning("当前搜索引擎不支持搜索该项目")
+            col2.error("当前搜索引擎不支持搜索该项目")
         #st.write(link)
+        if white_list != "" or black_list != "":
+            if engine in ['360搜索','搜狗']:
+                col2.warning("当前搜索引擎不支持关键词过滤，过滤器将不会生效")
         if something == "":
             cantserc = True
         st.link_button(f":material/launch: 立即搜索：{engine}", f"{link}",disabled=cantserc)
