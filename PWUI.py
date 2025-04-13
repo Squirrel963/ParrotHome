@@ -15,7 +15,7 @@ def get_data_from_api(api_url):
     data = response.json()  
     return data
 
-ver = '20250413_P0220'
+ver = '20250413_P0230'
 
 #这个api是免费的，盗用了也没意义，想用还不如自己注册一个（起码你能光明正大的用）
 api_key = "SSLJli7F2PINakHcG"
@@ -242,7 +242,7 @@ with tab2:
     #st.write(weather)
 
 with tab3:
-    serch = st.text_input(":material/search: 搜索", placeholder=':material/search: 搜索', label_visibility=True)
+    serch = st.text_input(":material/search: 搜索", placeholder='搜索网址名称或介绍', label_visibility=True)
     beautiful = st.toggle("整齐排版（强迫症快乐）", value=True,help='通过忽略底部突出网址，开启后会减少内容显示；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
     def webshows(name, description, uri):
         with st.container(border=True):
@@ -338,6 +338,7 @@ with tab6:
 托管账户提供者：squirrel963（github）  
 运行：本站点托管于streamlit社区云  
 总服务时长：{diff_days}d {diff_hours}h {diff_minutes}min  
+内部版本：{ver}  
 开源许可证：GPL-3.0''')
     with st.container(border=True):
         st.markdown('''##### 免责声明
