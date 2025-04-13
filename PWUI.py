@@ -242,8 +242,8 @@ with tab2:
     #st.write(weather)
 
 with tab3:
-    serch = st.text_input(":material/search: 搜索", placeholder=':material/search: 搜索网址名称或介绍', label_visibility='collapsed')
-    beautiful = st.toggle("整齐排版（强迫症快乐）", value=True,help='通过忽略底部突出网址，开启后会减少内容显示；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
+    serch = st.text_input(":material/search: 搜索", placeholder='搜索网址名称或介绍', label_visibility='collapsed')
+    beautiful = st.toggle("整齐排版（强迫症快乐模式）", value=True,help='通过忽略底部单独突出网址来使底部平整；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
     def webshows(name, description, uri):
         with st.container(border=True):
             st.write(f"{name}")
@@ -251,7 +251,7 @@ with tab3:
             st.link_button(":material/launch: 前往",url=uri)
     webli1, webli2, webli3, webli4 = st.columns(4)
     #with webli1:
-    width = (len(websites) // 4)
+    width = (len(websites) // 4) + int(not beautiful)
     i = 1
     with st.spinner("加载中..."):
         for website_name in sorted(websites.keys()):
