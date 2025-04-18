@@ -469,7 +469,7 @@ with tab4:
     with st.spinner("加载中..."):
         didnt_error = False
         try:
-            with open('websites.json', 'r', encoding='utf-8') as file:
+            with open('.\\data\\websites.json', 'r', encoding='utf-8') as file:
                 websites = json.load(file)
             didnt_error = True
         except Exception as e:
@@ -532,7 +532,7 @@ with tab4:
 with tab5:
     with st.spinner("加载中..."):
         try:
-            with open('friends.json', 'r', encoding='utf-8') as file:
+            with open('.\\data\\friends.json', 'r', encoding='utf-8') as file:
                 friends = json.load(file)
         except Exception as e:
             friends = {
