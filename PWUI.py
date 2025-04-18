@@ -18,7 +18,7 @@ def get_data_from_api(api_url):
     data = response.json()  
     return data
 
-ver = '20250418_P1040'
+ver = '20250418_P1100'
 
 api_key = st.secrets["weather"]["api_key"]
 
@@ -95,6 +95,15 @@ def share():
     st.balloons()
     st.write("地址：")
     st.code(f"https://parrothome.streamlit.app/")
+    st.download_button(
+        label="下载地址文本",
+        data='''地址：https://parrothome.streamlit.app/
+欢迎常来！''',
+        file_name="Parrot导航页地址.txt",
+        on_click="ignore",
+        type="primary",
+        icon=":material/download:",
+    )
 
 # @st.dialog("确认跳转")
 # def jump(url:str):
@@ -319,29 +328,6 @@ browz_tools = {
     }
 }
 
-try:
-    with open('websites.json', 'r', encoding='utf-8') as file:
-        websites = json.load(file)
-except Exception as e:
-    websites = {
-        ':material/warning: 网站错误': {
-            'url': '',
-            'description': f'{e}'
-        }
-    }
-
-try:
-    with open('friends.json', 'r', encoding='utf-8') as file:
-        friends = json.load(file)
-except Exception as e:
-    friends = {
-        '网站错误': {
-            'uri': '',
-            'des': f'{e}',
-            'image': ''
-        }
-    }
-
 with tab1:
     col1, col2 = st.columns([0.6, 0.4])
     with col2:
@@ -480,18 +466,35 @@ with tab3:
     st.write("敬请期待")
 
 with tab4:
+    with st.spinner("加载中..."):
+        didnt_error = False
+        try:
+            with open('websites.json', 'r', encoding='utf-8') as file:
+                websites = json.load(file)
+            didnt_error = True
+        except Exception as e:
+            websites = {
+                ':material/warning: 网站错误': {
+                    'url': 'error',
+                    'description': f'{e}'
+                }
+            }
     serch = st.text_input(":material/search: 搜索", placeholder='搜索网址名称或介绍', label_visibility='collapsed')
-    with st.popover("设置"):
-        beautiful = st.toggle("整齐排版（强迫症快乐模式）", value=True,help='通过忽略底部单独突出网址来使底部平整；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
+    with st.popover("显示设置"):
+        beautiful = st.toggle("平滑排版（强迫症快乐模式）", value=didnt_error,help='通过忽略底部单独突出网址来使底部平整；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
+        security = st.toggle("http加密显示", value=True,help='显示目标页面所使用的http连接是否加密')
     def webshows(name, description, uri:str, serchmode:bool):
         with st.container(border=True):
             http_mode = uri.split("://")[0]
             if not serchmode:
                 st.write(f"{name}")
-                if http_mode == "https":
-                    st.badge(f":material/verified_user: {http_mode}",color='green')
-                else:
-                    st.badge(f":material/error: {http_mode}",color='orange')
+                if security:
+                    if http_mode == "https":
+                        st.badge(f":material/verified_user: {http_mode}",color='green')
+                    elif uri == "error":
+                        st.badge(f":material/warning: 网站错误",color='red')
+                    else:
+                        st.badge(f":material/error: {http_mode}",color='orange')
                 st.text(description)
             else:
                 st.write(f"{name} ：{description}")
@@ -505,23 +508,35 @@ with tab4:
     width = (len(websites) // 4) + int(not beautiful) + more_width
     i = 1
     serch_mode = bool(serch)
-    with st.spinner("加载中..."):
-        for website_name in sorted(websites.keys()):
-            if serch.lower() in website_name.lower() or serch == "" or serch.lower() in websites[website_name]['description'].lower():
-                if i <= width:
-                    with webli1:
-                        webshows(website_name,websites[website_name]['description'],websites[website_name]['url'],serch_mode)
-                elif i <= width*2:
-                    with webli2:
-                        webshows(website_name,websites[website_name]['description'],websites[website_name]['url'],serch_mode)
-                elif i <= width*3:
-                    with webli3:
-                        webshows(website_name,websites[website_name]['description'],websites[website_name]['url'],serch_mode)
-                elif i <= width*4:
-                    with webli4:
-                        webshows(website_name,websites[website_name]['description'],websites[website_name]['url'],serch_mode)
-            i += 1
+    for website_name in sorted(websites.keys()):
+        if serch.lower() in website_name.lower() or serch == "" or serch.lower() in websites[website_name]['description'].lower():
+            if i <= width:
+                with webli1:
+                    webshows(website_name,websites[website_name]['description'],websites[website_name]['url'],serch_mode)
+            elif i <= width*2:
+                with webli2:
+                    webshows(website_name,websites[website_name]['description'],websites[website_name]['url'],serch_mode)
+            elif i <= width*3:
+                with webli3:
+                    webshows(website_name,websites[website_name]['description'],websites[website_name]['url'],serch_mode)
+            elif i <= width*4:
+                with webli4:
+                    webshows(website_name,websites[website_name]['description'],websites[website_name]['url'],serch_mode)
+        i += 1
+
 with tab5:
+    with st.spinner("加载中..."):
+        try:
+            with open('friends.json', 'r', encoding='utf-8') as file:
+                friends = json.load(file)
+        except Exception as e:
+            friends = {
+                '网站错误': {
+                    'uri': '',
+                    'des': f'{e}',
+                    'image': ''
+                }
+            }
     li1, li2, li3, li4 = st.columns(4)
     def yqshows(name, description, uri, imag):
         card(
