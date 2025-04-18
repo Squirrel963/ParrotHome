@@ -7,6 +7,9 @@ import streamlit_extras
 from streamlit_card import card
 import json
 import requests
+# import socket
+# import ssl
+import pandas as pd
 from datetime import datetime
 requests.packages.urllib3.disable_warnings()
 def get_data_from_api(api_url):  
@@ -17,8 +20,7 @@ def get_data_from_api(api_url):
 
 ver = '20250413_P0305'
 
-#这个api是免费的，盗用了也没意义，想用还不如自己注册一个（起码你能光明正大的用）
-api_key = "SSLJli7F2PINakHcG"
+api_key = st.secrets["weather"]["api_key"]
 
 st.set_page_config(
     page_title="Parrot导航页",
@@ -27,10 +29,61 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-caches = ['weatherloaded','weather','weather_helper']
+caches = ['weatherloaded','weather','weather_helper','location']
 for i in caches:
     if i not in st.session_state:
         st.session_state[i] = False
+
+# def check_ssl_status(shostname:str, port=443):
+#     """
+#     检查指定主机的SSL证书状态
+
+#     参数：
+#     hostname (str): 要检查的主机名
+#     port (int): 要检查的端口，默认是443
+
+#     返回：
+#     str: 表示SSL证书状态的字符串，可能的值包括：
+#          - "SSL证书正常"
+#          - "SSL证书已过期"
+#          - "SSL证书无效"
+#          - "连接超时"
+#     """
+#     context = ssl.create_default_context()
+#     conn = None
+#     status = "ssSSL证书无效"
+#     hostname = socket.gethostbyname(shostname.replace("/","").replace("https:","").replace("http:",""))
+#     st.write(hostname)
+
+#     try:
+#         conn = context.wrap_socket(
+#             socket.socket(socket.AF_INET),
+#             server_hostname=hostname,
+#         )
+#         conn.settimeout(3.0)
+#         conn.connect((hostname, port))
+#         cert = conn.getpeercert()
+
+#         # 获取SSL证书到期时间
+#         expiry_date = datetime.strptime(cert['notAfter'], '%b %d %H:%M:%S %Y %Z')
+
+#         # 检查SSL证书是否过期
+#         if expiry_date < datetime.now():
+#             status = "SSL证书已过期"
+#         else:
+#             status = "SSL证书正常"
+
+#     except ssl.SSLError as e:
+#         status = "SSL证书无效SSLError"
+#     except socket.timeout:
+#         status = "站点连接超时"
+#     except Exception as e:
+#         status = f"SSL证书无效{e}"
+#     finally:
+#         if conn:
+#             conn.close()
+
+#     return status
 
 @st.dialog("发生错误！")
 def vote(text:str):
@@ -43,8 +96,21 @@ def share():
     st.write("地址：")
     st.code(f"https://parrothome.streamlit.app/")
 
+# @st.dialog("确认跳转")
+# def jump(url:str):
+#     with st.spinner("检查目标站点中..."):
+#         state = check_ssl_status(url)
+#         st.write(state)
+
 st.title("Parrot 导航页")
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([":material/search: 搜索引擎", ":material/layers: 资讯卡片", ":material/near_me: 网站收录", ":material/local_cafe: 友情链接", ":material/check: 帮助改进", ":material/share: 关于本站"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+    ":material/search: 搜索引擎", 
+    ":material/layers: 资讯卡片", 
+    ":material/widgets: 实用工具", 
+    ":material/near_me: 网站收录", 
+    ":material/local_cafe: 友情链接", 
+    ":material/check: 帮助改进", 
+    ":material/share: 关于本站"])
 
 engine_links = {
     'Bing':{'text':"https://cn.bing.com/search?q=",
@@ -117,6 +183,142 @@ tans = {
     ":material/movie: 视频":"video"
 }
 
+browz_tools = {
+    "Edge" :{
+        "关于Microsoft Edge": "edge://about",
+        "无障碍功能设置": "edge://accessibility",
+        "应用服务内部信息": "edge://app-service-internals",
+        "应用防护内部信息": "edge://application-guard-internals",
+        "应用管理": "edge://apps",
+        "归因内部信息": "edge://attribution-internals",
+        "自动填充内部信息": "edge://autofill-internals",
+        "Blob内部信息": "edge://blob-internals",
+        "蓝牙内部信息": "edge://bluetooth-internals",
+        "浏览器必备功能": "edge://browser-essentials",
+        "浏览器必备功能（顶部Chrome）": "edge://browser-essentials.top-chrome",
+        "商业内部信息": "edge://commerce-internals",
+        "兼容性信息": "edge://compat",
+        "组件更新": "edge://components",
+        "冲突检测": "edge://conflicts",
+        "连接器内部信息": "edge://connectors-internals",
+        "崩溃报告": "edge://crashes",
+        "致谢": "edge://credits",
+        "数据查看器": "edge://data-viewer",
+        "设备日志": "edge://device-log",
+        "页面丢弃": "edge://discards",
+        "下载内部信息": "edge://download-internals",
+        "下载管理": "edge://downloads",
+        "数据丢失防护内部信息": "edge://edge-dlp-internals",
+        "Edge URL列表": "edge://edge-urls",
+        "增强型网络防护": "edge://enp",
+        "扩展程序": "edge://extensions",
+        "扩展程序内部信息": "edge://extensions-internals",
+        "收藏夹": "edge://favorites",
+        "实验性功能": "edge://flags",
+        "图形处理单元信息": "edge://gpu",
+        "帮助": "edge://help",
+        "直方图数据": "edge://histograms",
+        "历史记录": "edge://history",
+        "历史记录聚类内部信息": "edge://history-clusters-internals",
+        "索引数据库内部信息": "edge://indexeddb-internals",
+        "开发者工具": "edge://inspect",
+        "拦截页面": "edge://interstitials",
+        "启动来源": "edge://launch-source",
+        "本地状态": "edge://local-state",
+        "管理应用": "edge://mam-internals",
+        "管理控制台": "edge://management",
+        "媒体参与度": "edge://media-engagement",
+        "媒体内部信息": "edge://media-internals",
+        "指标内部信息": "edge://metrics-internals",
+        "模块管理": "edge://modules",
+        "网络导出": "edge://net-export",
+        "网络内部信息": "edge://net-internals",
+        "网络错误": "edge://network-errors",
+        "新标签页": "edge://newtab",
+        "新标签页瓦片内部信息": "edge://ntp-tiles-internals",
+        "地址栏": "edge://omnibox",
+        "设备内部信息": "edge://on-device-internals",
+        "优化指南内部信息": "edge://optimization-guide-internals",
+        "密码管理器内部信息": "edge://password-manager-internals",
+        "策略设置": "edge://policy",
+        "首次运行前置体验": "edge://pre-launch-fre",
+        "预测服务": "edge://predictors",
+        "偏好设置内部信息": "edge://prefs-internals",
+        "打印": "edge://print",
+        "私有聚合内部信息": "edge://private-aggregation-internals",
+        "进程内部信息": "edge://process-internals",
+        "个人资料内部信息": "edge://profile-internals",
+        "推送通知内部信息": "edge://push-internals",
+        "配额内部信息": "edge://quota-internals",
+        "沙盒环境": "edge://sandbox",
+        "安全诊断": "edge://security-diagnostics",
+        "服务工作线程内部信息": "edge://serviceworker-internals",
+        "设置": "edge://settings",
+        "登录内部信息": "edge://signin-internals",
+        "网站参与度": "edge://site-engagement",
+        "同步内部信息": "edge://sync-internals",
+        "系统信息": "edge://system",
+        "标签页搜索（顶部Chrome）": "edge://tab-search.top-chrome",
+        "服务条款": "edge://terms",
+        "主题内部信息": "edge://topics-internals",
+        "性能追踪": "edge://tracing",
+        "翻译内部信息": "edge://translate-internals",
+        "使用体验改进计划": "edge://ukm",
+        "USB内部信息": "edge://usb-internals",
+        "用户操作": "edge://user-actions",
+        "版本信息": "edge://version",
+        "电子钱包": "edge://wallet",
+        "电子钱包密码管理": "edge://wallet/passwords",
+        "网络应用内部信息": "edge://web-app-internals",
+        "WebRTC内部信息": "edge://webrtc-internals",
+        "WebRTC日志": "edge://webrtc-logs",
+        "工作区内部信息": "edge://workspaces-internals"
+    },
+    "chrome(内核)" :{
+        "打开新标签页": "chrome://newtab",
+        "打开浏览器设置": "chrome://settings",
+        "查看实验性功能": "chrome://flags",
+        "管理扩展程序": "chrome://extensions",
+        "查看历史记录": "chrome://history",
+        "查看下载列表": "chrome://downloads",
+        "管理书签": "chrome://bookmarks",
+        "查看所有打开的标签页": "chrome://tabs",
+        "查看隐私设置": "chrome://privacy",
+        "查看安全信息": "chrome://certificateviewer",
+        "打开任务管理器": "chrome://task-manager",
+        "查看内存使用情况": "chrome://memory",
+        "调试移动设备上的网页": "chrome://inspect",
+        "性能分析工具": "chrome://tracing",
+        "查看浏览器使用统计数据": "chrome://stats",
+        "查看浏览器版本信息": "chrome://about",
+        "查看和更新浏览器组件": "chrome://components",
+        "查看网络事件信息": "chrome://net-internals",
+        "查看网页翻译设置": "chrome://translate-internals",
+        "显示下载的媒体文件": "chrome://media-engagement",
+        "查看浏览器的同步状态": "chrome://sync",
+        "查看浏览器的痕迹": "chrome://net-export",
+        "查看浏览器的权限设置": "chrome://site-settings",
+        "查看浏览器的无障碍设置": "chrome://accessibility",
+        "查看浏览器的字体设置": "chrome://settings/fonts",
+        "查看浏览器的下载位置设置": "chrome://settings/downloads"
+    },
+    "Firefox" :{
+        "打开新标签页": "about:newtab",
+        "打开浏览器设置": "about:preferences",
+        "查看隐私设置": "about:preferences#privacy",
+        "查看网络请求信息": "about:networking",
+        "查看浏览器配置": "about:config",
+        "查看扩展信息": "about:addons",
+        "查看历史记录": "about:history",
+        "查看下载列表": "about:downloads",
+        "查看内存使用情况": "about:memory",
+        "查看性能信息": "about:performance",
+        "查看系统信息": "about:system",
+        "查看日志": "about:logs",
+        "查看证书": "about:certificates"
+    }
+}
+
 try:
     with open('websites.json', 'r', encoding='utf-8') as file:
         websites = json.load(file)
@@ -184,7 +386,25 @@ with tab1:
                 col2.warning("当前搜索引擎不支持相关功能，过滤器将不会完全生效")
         if something == "":
             cantserc = True
-        st.link_button(f":material/launch: 立即搜索：{engine}", f"{link}",disabled=cantserc)
+        sercol1, sercol2 = st.columns([0.35, 0.65])
+        with sercol1:
+            st.link_button(f":material/launch: 立即搜索：{engine}", f"{link}",disabled=cantserc)
+        with sercol2:
+            with st.expander(":material/build: 浏览器工具箱"):
+                brow_map = {
+                    0: "Edge",
+                    1: "chrome(内核)",
+                    2: "Firefox",
+                }
+                brow = st.segmented_control(
+                    "Tool",label_visibility='collapsed',
+                    options=brow_map.keys(),
+                    format_func=lambda option: brow_map[option],
+                    selection_mode="single",
+                )
+                if not brow == None:
+                    brow_tool = st.selectbox("s",label_visibility='collapsed',options=browz_tools[brow_map[brow]])
+                    st.code(browz_tools[brow_map[brow]][brow_tool])
     
 def wearther_sogs(name ,brief, details):
     with st.expander(f"{name}：{brief}"):
@@ -196,11 +416,15 @@ with tab2:
         with st.container(border=True):
             loc1, loc2 = st.columns([0.05,0.95])
             with st.spinner("正在获取数据..."):
-                with loc1:
-                    earth_location = streamlit_geolocation()
-                with loc2:
-                    st.text("点按左侧按钮以允许PH获取您的位置信息")
-                location = f'{earth_location["latitude"]}:{earth_location["longitude"]}'
+                if not st.session_state['weatherloaded']:
+                    with loc1:
+                        earth_location = streamlit_geolocation()
+                    with loc2:
+                        st.text("点按左侧按钮以允许PH获取您的位置信息")
+                    location = f'{earth_location["latitude"]}:{earth_location["longitude"]}'
+                    st.session_state['location'] = earth_location
+                else:
+                    st.write(":material/gps_fixed: 已获取您的位置信息")
                 #location = get_data_from_api(f"https://api.seniverse.com/v3/location/search.json?key={api_key}&q={earth_location}")["results"][0]['id']
                 if not st.session_state['weatherloaded']:
                     try:
@@ -222,7 +446,6 @@ with tab2:
                     except:
                         st.write(":material/gps_off: 未获取位置信息")
         if st.session_state['weatherloaded']:
-            #st.toast('已读取您的位置信息！', icon=':material/check:')
             with st.container(border=True):
                 try:
                     st.header(f"{weather_code[int(st.session_state['weather']['now']['code'])]} {st.session_state['weather']['now']['text']}     {st.session_state['weather']['now']['temperature']}℃")
@@ -231,26 +454,44 @@ with tab2:
                 st.subheader(f":material/room: {st.session_state['weather']['location']['path']}")
                 st.caption(f'最后更新：{st.session_state["weather"]["last_update"].replace("T", " ")} （数据来自"心知天气"）')
         if st.session_state['weatherloaded']:
+            with st.container(border=True):
+                st.map(data={'lat': [st.session_state['location']["latitude"]], 'lon': [st.session_state['location']["longitude"]]}, zoom=10, height=300)
+                st.subheader("您的位置信息")
+                st.markdown(f'''纬度：{st.session_state['location']["latitude"]}  
+经度：{st.session_state['location']["longitude"]}''')
+        if st.session_state['weatherloaded']:
+            chart_data = pd.DataFrame(
+                {
+                    "col1": [1,2,3,4],
+                    "col2": [2,3,4,5],
+                    "col3": None,
+                }
+            )
+
+            #st.line_chart(chart_data, x="col1", y="col2", color="col3")
+    with info2:
+        if st.session_state['weatherloaded']:
             for sogs in sorted(st.session_state['weather_helper'].keys()):
                 wearther_sogs(suggestion_tans[sogs], st.session_state['weather_helper'][sogs]['brief'], st.session_state['weather_helper'][sogs]['details'])
                 #time.sleep(0.05)
-    with info2:
-        if st.session_state['weatherloaded']:
-            with st.container(border=True):
-                st.map(data={'lat': [earth_location["latitude"]], 'lon': [earth_location["longitude"]]}, zoom=10)
-            with st.container(border=True):
-                st.subheader("您的位置信息")
-                st.markdown(f'''纬度：{earth_location["latitude"]}  
-经度：{earth_location["longitude"]}''')
     #st.write(weather)
 
 with tab3:
+    st.write("敬请期待")
+
+with tab4:
     serch = st.text_input(":material/search: 搜索", placeholder='搜索网址名称或介绍', label_visibility='collapsed')
-    beautiful = st.toggle("整齐排版（强迫症快乐模式）", value=True,help='通过忽略底部单独突出网址来使底部平整；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
-    def webshows(name, description, uri, serchmode:bool):
+    with st.popover("设置"):
+        beautiful = st.toggle("整齐排版（强迫症快乐模式）", value=True,help='通过忽略底部单独突出网址来使底部平整；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
+    def webshows(name, description, uri:str, serchmode:bool):
         with st.container(border=True):
+            http_mode = uri.split("://")[0]
             if not serchmode:
                 st.write(f"{name}")
+                if http_mode == "https":
+                    st.badge(f":material/verified_user: {http_mode}",color='green')
+                else:
+                    st.badge(f":material/error: {http_mode}",color='orange')
                 st.text(description)
             else:
                 st.write(f"{name} ：{description}")
@@ -280,7 +521,7 @@ with tab3:
                     with webli4:
                         webshows(website_name,websites[website_name]['description'],websites[website_name]['url'],serch_mode)
             i += 1
-with tab4:
+with tab5:
     li1, li2, li3, li4 = st.columns(4)
     def yqshows(name, description, uri, imag):
         card(
@@ -306,7 +547,7 @@ with tab4:
                 yqshows(friends_name, friends[friends_name]['des'], friends[friends_name]['uri'], friends[friends_name]['image'])
         j += 1
 
-with tab5:
+with tab6:
     with st.container(border=True):
         st.caption(":material/move_to_inbox: 网站收录内容")
         uul_url = st.text_input("网址",placeholder='必填')
@@ -330,7 +571,7 @@ with tab5:
             report_text = st.text_area("详细信息",help='''不知道填什么？ 可填写某功能出现的异常现象或你需要的新功能或对已有的功能提出建议''',placeholder='必填')
             st.link_button(":material/email: 发送邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH建议：{report_types}&body=详细信息：{report_text}", disabled=(report_text==""))
 
-with tab6:
+with tab7:
     start_time = datetime(2025, 4, 11, 13, 20, 5)
     end_time = datetime.now()
     time_diff = end_time - start_time
