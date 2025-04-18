@@ -18,7 +18,7 @@ def get_data_from_api(api_url):
     data = response.json()  
     return data
 
-ver = '20250413_P0305'
+ver = '20250418_P1015'
 
 api_key = st.secrets["weather"]["api_key"]
 
@@ -414,7 +414,7 @@ with tab2:
     info1, info2 = st.columns(2)
     with info1:
         with st.container(border=True):
-            loc1, loc2 = st.columns([0.05,0.95])
+            loc1, loc2 = st.columns([0.1,0.9])
             with st.spinner("正在获取数据..."):
                 if not st.session_state['weatherloaded']:
                     with loc1:
