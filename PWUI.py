@@ -1,4 +1,4 @@
-import http
+#import http
 import streamlit as st
 #from streamlit_elements import elements, mui, html
 from streamlit_geolocation import streamlit_geolocation
@@ -18,7 +18,7 @@ def get_data_from_api(api_url):
     data = response.json()  
     return data
 
-ver = '20250418_P1100'
+ver = '20250418_P1110'
 
 api_key = st.secrets["weather"]["api_key"]
 
@@ -469,7 +469,7 @@ with tab4:
     with st.spinner("加载中..."):
         didnt_error = False
         try:
-            with open('.\\data\\websites.json', 'r', encoding='utf-8') as file:
+            with open('data\\websites.json', 'r', encoding='utf-8') as file:
                 websites = json.load(file)
             didnt_error = True
         except Exception as e:
@@ -532,7 +532,7 @@ with tab4:
 with tab5:
     with st.spinner("加载中..."):
         try:
-            with open('.\\data\\friends.json', 'r', encoding='utf-8') as file:
+            with open('data\\friends.json', 'r', encoding='utf-8') as file:
                 friends = json.load(file)
         except Exception as e:
             friends = {
