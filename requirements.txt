@@ -1,3 +1,0 @@
-streamlit-card==1.0.2
-streamlit-geolocation==0.0.10
-streamlit-tags==1.2.8
