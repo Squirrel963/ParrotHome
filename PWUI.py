@@ -492,13 +492,18 @@ with tab4:
                     if http_mode == "https":
                         st.badge(f":material/verified_user: {http_mode}",color='green')
                     elif uri == "error":
-                        st.badge(f":material/warning: 网站错误",color='red')
+                        st.badge(f":material/block: 内部问题",color='red')
                     else:
                         st.badge(f":material/error: {http_mode}",color='orange')
-                st.text(description)
+                if uri != "error":
+                    st.text(description)
             else:
                 st.write(f"{name} ：{description}")
-            st.link_button(":material/launch: 前往",url=uri)
+            if uri != "error":
+                st.link_button(":material/launch: 前往",url=uri)
+            else:
+                if st.button(":material/launch: 前往"):
+                    vote(description)
     webli1, webli2, webli3, webli4 = st.columns(4)
     #with webli1:
     if bool(serch):
