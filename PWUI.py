@@ -11,6 +11,7 @@ import requests
 # import ssl
 import pandas as pd
 from datetime import datetime
+import UPDATECHECK
 requests.packages.urllib3.disable_warnings()
 def get_data_from_api(api_url):  
     # 发送GET请求  
@@ -18,7 +19,7 @@ def get_data_from_api(api_url):
     data = response.json()  
     return data
 
-ver = '20250418_P1110'
+ver = '20250418_P1120'
 
 api_key = st.secrets["weather"]["api_key"]
 
@@ -29,7 +30,7 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-caches = ['weatherloaded','weather','weather_helper','location']
+caches = ['weatherloaded','weather','weather_helper','location','uplog']
 for i in caches:
     if i not in st.session_state:
         st.session_state[i] = False
@@ -469,7 +470,7 @@ with tab4:
     with st.spinner("加载中..."):
         didnt_error = False
         try:
-            with open('data\\websites.json', 'r', encoding='utf-8') as file:
+            with open('websites.json', 'r', encoding='utf-8') as file:
                 websites = json.load(file)
             didnt_error = True
         except Exception as e:
@@ -532,7 +533,7 @@ with tab4:
 with tab5:
     with st.spinner("加载中..."):
         try:
-            with open('data\\friends.json', 'r', encoding='utf-8') as file:
+            with open('friends.json', 'r', encoding='utf-8') as file:
                 friends = json.load(file)
         except Exception as e:
             friends = {
@@ -600,22 +601,35 @@ with tab7:
     diff_hours = diff_seconds // 3600
     diff_minutes = (diff_seconds % 3600) // 60
     st.subheader(" 关于 Parrot Home")
-    with st.container(border=True):
-        st.markdown('''##### 概述
+    infocol1, infocol2 = st.columns([0.7, 0.3])
+    with infocol1:
+        with st.container(border=True):
+            st.markdown('''##### 概述
 本站是由streamlit编写的导航页面，旨在提供公益导航服务  
 包含多搜索引擎跳转、网址合集、资讯卡片等''')
-    with st.container(border=True):
-        st.markdown(f'''##### 运营
+        with st.container(border=True):
+            st.markdown(f'''##### 运营
 负责人&站长：wycc  
 托管账户提供者：squirrel963（github）  
 运行：本站点托管于streamlit社区云  
 总服务时长：{diff_days}d {diff_hours}h {diff_minutes}min  
 内部版本：{ver}  
 开源许可证：GPL-3.0''')
-    with st.container(border=True):
-        st.markdown('''##### 免责声明
+        with st.container(border=True):
+            st.markdown('''##### 免责声明
 本站点仅提供第三方网页跳转服务  
 本身不存储任何用户数据及服务用数据  
 数据均来自第三方，与本站无关''')
-    if st.button(":material/share: 分享该站点！",use_container_width=True):
-        share()
+        if st.button(":material/share: 分享该站点！",use_container_width=True):
+            share()
+    with infocol2:
+        with st.container(border=True):
+            st.markdown("##### 更新日志")
+            if not st.session_state['uplog']:
+                if st.button("加载数据"):
+                    with st.spinner("获取数据中..."):
+                        st.session_state['uplog'] = UPDATECHECK.getlog("https://squirrel963.github.io/parrot_web_database/PH_allinfo/index.md")
+                        st.rerun()
+            if st.session_state['uplog']:
+                log_version = st.selectbox("版本",options=st.session_state['uplog'])
+                st.code(st.session_state['uplog'][log_version])
