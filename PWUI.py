@@ -1,9 +1,9 @@
 import http
 import streamlit as st
-from streamlit_elements import elements, mui, html
+#from streamlit_elements import elements, mui, html
 from streamlit_geolocation import streamlit_geolocation
 from streamlit_tags import st_tags
-import streamlit_extras
+#import streamlit_extras
 from streamlit_card import card
 import json
 import requests
@@ -18,7 +18,7 @@ def get_data_from_api(api_url):
     data = response.json()  
     return data
 
-ver = '20250418_P1015'
+ver = '20250418_P1040'
 
 api_key = st.secrets["weather"]["api_key"]
 
