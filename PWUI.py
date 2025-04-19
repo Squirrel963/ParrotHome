@@ -611,7 +611,7 @@ with tab2:
     #st.write(weather)
 
 with tab3:
-    st.write("敬请期待")
+    st.page_link("pages/bg_remove.py", label="图片背景清除工具  ~  PH本站提供", icon=":material/compare:",use_container_width=True)
 
 with tab4:
     with st.spinner("加载中..."):
