@@ -8,16 +8,14 @@ import os
 import traceback
 import time
 
-st.set_page_config(layout="wide", page_title="Image Background Remover")
+st.set_page_config(page_icon="🦜", layout="wide", page_title="PH - tools")
 
-st.write("## Remove background from your image")
-st.write(
-    ":dog: Try uploading an image to watch the background magically removed. Full quality images can be downloaded from the sidebar. This code is open source and available [here](https://github.com/tyler-simons/BackgroundRemoval) on GitHub. Special thanks to the [rembg library](https://github.com/danielgatis/rembg) :grin:"
-)
-st.sidebar.write("## Upload and download :gear:")
+st.write("## 图像背景清除器")
+
+st.sidebar.write("## :material/setting: 文件操作面板")
 
 # Increased file size limit
-MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+MAX_FILE_SIZE = 20 * 1024 * 1024  # 10MB
 
 # Max dimensions for processing
 MAX_IMAGE_SIZE = 2000  # pixels
@@ -64,7 +62,7 @@ def fix_image(upload):
         progress_bar = st.sidebar.progress(0)
         status_text = st.sidebar.empty()
         
-        status_text.text("Loading image...")
+        status_text.text("加载图像...")
         progress_bar.progress(10)
         
         # Read image bytes
@@ -79,7 +77,7 @@ def fix_image(upload):
             # Uploaded file
             image_bytes = upload.getvalue()
         
-        status_text.text("Processing image...")
+        status_text.text("加工图片中...")
         progress_bar.progress(30)
         
         # Process image (using cache if available)
@@ -88,19 +86,19 @@ def fix_image(upload):
             return
         
         progress_bar.progress(80)
-        status_text.text("Displaying results...")
+        status_text.text("显示处理结果...")
         
         # Display images
-        col1.write("Original Image :camera:")
+        col1.write("原图像")
         col1.image(image)
         
-        col2.write("Fixed Image :wrench:")
+        col2.write("处理后图像")
         col2.image(fixed)
         
         # Prepare download button
         st.sidebar.markdown("\n")
         st.sidebar.download_button(
-            "Download fixed image", 
+            "下载处理后图像", 
             convert_image(fixed), 
             "fixed.png", 
             "image/png"
@@ -118,21 +116,21 @@ def fix_image(upload):
 
 # UI Layout
 col1, col2 = st.columns(2)
-my_upload = st.sidebar.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
+my_upload = st.sidebar.file_uploader("上传图像", type=["png", "jpg", "jpeg"])
 
 # Information about limitations
-with st.sidebar.expander("ℹ️ Image Guidelines"):
-    st.write("""
-    - Maximum file size: 10MB
-    - Large images will be automatically resized
-    - Supported formats: PNG, JPG, JPEG
-    - Processing time depends on image size
-    """)
+#with st.sidebar.expander("ℹ️ Image Guidelines"):
+#    st.write("""
+#    - Maximum file size: 10MB
+#    - Large images will be automatically resized
+#    - Supported formats: PNG, JPG, JPEG
+#    - Processing time depends on image size
+#    """)
 
 # Process the image
 if my_upload is not None:
     if my_upload.size > MAX_FILE_SIZE:
-        st.error(f"The uploaded file is too large. Please upload an image smaller than {MAX_FILE_SIZE/1024/1024:.1f}MB.")
+        st.error(f"文件过大！ 请上传小于 {MAX_FILE_SIZE/1024/1024:.1f}MB 的文件")
     else:
         fix_image(upload=my_upload)
 else:
@@ -143,4 +141,4 @@ else:
             fix_image(img_path)
             break
     else:
-        st.info("Please upload an image to get started!")
+        st.info("上传一个文件以开始处理！")
