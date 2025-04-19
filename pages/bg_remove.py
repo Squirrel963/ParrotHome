@@ -12,7 +12,7 @@ st.set_page_config(page_icon="🦜", layout="wide", page_title="PH - tools")
 
 st.write("## 图像背景清除器")
 
-st.sidebar.write("## :material/setting: 文件操作面板")
+st.sidebar.write("## :material/settings: 文件操作面板")
 
 # Increased file size limit
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 10MB
@@ -106,7 +106,7 @@ def fix_image(upload):
         
         progress_bar.progress(100)
         processing_time = time.time() - start_time
-        status_text.text(f"Completed in {processing_time:.2f} seconds")
+        status_text.text(f"在 {processing_time:.2f} 秒中完成")
         
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
@@ -116,6 +116,7 @@ def fix_image(upload):
 
 # UI Layout
 col1, col2 = st.columns(2)
+st.sidebar.page_link("PWUI.py", label="返回主页", icon=":material/home:",use_container_width=True)
 my_upload = st.sidebar.file_uploader("上传图像", type=["png", "jpg", "jpeg"])
 
 # Information about limitations
