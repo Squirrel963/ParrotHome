@@ -22,7 +22,7 @@ def check(version, uri):
     return updated
 
 def getlog(uri):
-    uplog = requests.get(uri, verify=False).content.decode("utf-8").replace("\n"," ").split("/")
+    uplog = requests.get(uri, verify=False).content.decode("utf-8").replace("\n","  ").split("/")
     uplog.pop(0)
     up_dict = {}
     logvlist = []
