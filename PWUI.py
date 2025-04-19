@@ -70,7 +70,7 @@ def send_email(
     except Exception as e:
         return str(e)
 
-ver = '20250419_P0520'
+ver = '20250419_P0800'
 
 api_key = st.secrets["weather"]["api_key"]
 
