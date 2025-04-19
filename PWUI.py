@@ -10,6 +10,7 @@ import requests
 # import socket
 # import ssl
 import pandas as pd
+import random
 from datetime import datetime
 import UPDATECHECK
 requests.packages.urllib3.disable_warnings()
@@ -19,7 +20,57 @@ def get_data_from_api(api_url):
     data = response.json()  
     return data
 
-ver = '20250418_P1120'
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+def send_email(
+    smtp_server: str,
+    smtp_port: int,
+    sender_email: str,
+    receiver_email: str,
+    subject: str,
+    body: str,
+    sender_password: str,
+    use_tls: bool = True
+):
+    """
+    使用 SMTP 协议发送邮件
+    
+    参数:
+        smtp_server: SMTP 服务器地址
+        smtp_port: SMTP 服务器端口
+        sender_email: 发件人邮箱地址
+        receiver_email: 收件人邮箱地址
+        subject: 邮件主题
+        body: 邮件正文
+        sender_password: 发件人邮箱密码
+        use_tls: 是否使用 TLS 加密
+    
+    返回:
+        str: 成功返回 'success'，失败返回错误信息
+    """
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = receiver_email
+        msg['Subject'] = subject
+
+        msg.attach(MIMEText(body, 'plain'))
+    
+        if use_tls:
+            server = smtplib.SMTP(smtp_server, smtp_port)
+            server.starttls()
+        else:
+            server = smtplib.SMTP_SSL(smtp_server, smtp_port)
+        server.login(sender_email, sender_password)
+        server.send_message(msg)
+        server.quit()
+        return 'success'
+    except Exception as e:
+        return str(e)
+
+ver = '20250419_P0520'
 
 api_key = st.secrets["weather"]["api_key"]
 
@@ -30,10 +81,13 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
-caches = ['weatherloaded','weather','weather_helper','location','uplog']
+caches = ['weatherloaded','weather','weather_helper','location','uplog','randkey','sent']
 for i in caches:
     if i not in st.session_state:
         st.session_state[i] = False
+
+if not st.session_state['randkey']:
+    st.session_state['randkey'] = random.randint(1000000,9999999)
 
 # def check_ssl_status(shostname:str, port=443):
 #     """
@@ -105,6 +159,99 @@ def share():
         type="primary",
         icon=":material/download:",
     )
+
+@st.dialog("发送邮件")
+def sent_mail(uri:str, infomation:str, sent_type:str):
+    if sent_type == "contribute":
+        if '.' in uri:
+            st.write(f"您准备投稿的地址是{uri}")
+            owner = st.toggle("将站点置于友链")
+            if owner:
+                with st.container(border=True):
+                    emails = st.text_input("发送该内容需要您提供您的电子邮件地址",help="您的电子邮箱用于后续审核处理，不会被恶意滥用及泄露")
+                    if emails != "" and "@" in emails:
+                        if st.button(":material/vpn_key: 发送验证邮件"):
+                            with st.spinner("正在发送邮件...请稍等"):
+                                asucc = send_email(smtp_server="smtp.163.com",
+                                        smtp_port=465,
+                                        sender_email=st.secrets["mail"]["email"],
+                                        receiver_email=emails,
+                                        subject="PH邮箱身份验证",
+                                        sender_password=st.secrets["mail"]["imap"],
+                                        body=f'''您正在PH上投稿一个友链，如果这不是您本人所为，请忽略本邮件。请填入该验证码以继续操作：{st.session_state['randkey']}''',
+                                        use_tls=False)
+                                if asucc == "success":
+                                    st.session_state['sent'] = emails
+                key_code = st.text_input("您收到的数字验证码")
+            if st.button(":material/send: 发送"):
+                if owner:
+                    if key_code == st.session_state['randkey']:
+                        with st.spinner("正在发送邮件...请稍等"):
+                            asucc = send_email(smtp_server="smtp.163.com",
+                                    smtp_port=465,
+                                    sender_email=st.secrets["mail"]["email"],
+                                    receiver_email=st.secrets["mail"]["target"],
+                                    subject="PH网站收录",
+                                    sender_password=st.secrets["mail"]["imap"],
+                                    body=f"网址：{uri}，简介：{infomation}",
+                                    use_tls=False)
+                        if asucc == "success":
+                            st.success("发送成功！")
+                        else:
+                            st.warning(f"邮件发送失败！")
+                    else:
+                        st.error("验证码错误！")
+                else:
+                    with st.spinner("正在发送邮件...请稍等"):
+                        asucc = send_email(smtp_server="smtp.163.com",
+                                    smtp_port=465,
+                                    sender_email=st.secrets["mail"]["email"],
+                                    receiver_email=st.secrets["mail"]["target"],
+                                    subject="PH网站收录",
+                                    sender_password=st.secrets["mail"]["imap"],
+                                    body=f"网址：{uri}，简介：{infomation}",
+                                    use_tls=False)
+                    if asucc == "success":
+                        st.success("发送成功！")
+                    else:
+                        st.warning(f"邮件发送失败！")
+        else:
+            st.write("您填写的网址看起来不像一个真正的网址")
+    elif sent_type == "report":
+        with st.container(border=True):
+            emails = st.text_input("发送该内容需要您提供您的电子邮件地址",help="您的电子邮箱用于后续处理状态追踪订阅，不会被恶意滥用及泄露")
+            if emails != "" and "@" in emails:
+                if st.button(":material/vpn_key: 发送验证邮件"):
+                    with st.spinner("正在发送邮件...请稍等"):
+                        asucc = send_email(smtp_server="smtp.163.com",
+                                smtp_port=465,
+                                sender_email=st.secrets["mail"]["email"],
+                                receiver_email=emails,
+                                subject="PH邮箱身份验证",
+                                sender_password=st.secrets["mail"]["imap"],
+                                body=f'''您正在PH上汇报一个问题，如果这不是您本人所为，请忽略本邮件。请填入该验证码以继续操作：{st.session_state['randkey']}''',
+                                use_tls=False)
+                        if asucc == "success":
+                            st.session_state['sent'] = emails
+        key_code = st.text_input("您收到的数字验证码")
+        if st.button(":material/send: 发送"):
+            if key_code == f"{st.session_state['randkey']}":
+                with st.spinner("正在发送邮件...请稍等"):
+                    asucc = send_email(smtp_server="smtp.163.com",
+                            smtp_port=465,
+                            sender_email=st.secrets["mail"]["email"],
+                            receiver_email=st.secrets["mail"]["target"],
+                            subject="PH网站问题反馈",
+                            sender_password=st.secrets["mail"]["imap"],
+                            body=f"{uri}，追踪邮箱：{st.session_state['sent']}，问题：'{infomation}'",
+                            use_tls=False)
+                if asucc == "success":
+                    st.success("发送成功！")
+                    st.session_state['randkey'] = random.randint(1000000,9999999)
+                else:
+                    st.warning(f"邮件发送失败！")
+            else:
+                st.error("验证码错误！")
 
 # @st.dialog("确认跳转")
 # def jump(url:str):
@@ -480,10 +627,14 @@ with tab4:
                     'description': f'{e}'
                 }
             }
-    serch = st.text_input(":material/search: 搜索", placeholder='搜索网址名称或介绍', label_visibility='collapsed')
+    serch = st.text_input(":material/search: 搜索", placeholder='搜索网址名称或简介', label_visibility='collapsed')
     with st.popover("显示设置"):
-        beautiful = st.toggle("平滑排版（强迫症快乐模式）", value=didnt_error,help='通过忽略底部单独突出网址来使底部平整；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
+        beautiful = st.toggle("整齐排版", value=didnt_error,help='通过相关处理来使总体卡片整齐排列；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
         security = st.toggle("http加密显示", value=True,help='显示目标页面所使用的http连接是否加密')
+    if beautiful:
+        showmode = "top"
+    else:
+        showmode = "center"
     def webshows(name, description, uri:str, serchmode:bool):
         with st.container(border=True):
             http_mode = uri.split("://")[0]
@@ -500,12 +651,19 @@ with tab4:
                     st.text(description)
             else:
                 st.write(f"{name} ：{description}")
+                if security:
+                    if http_mode == "https":
+                        st.badge(f":material/verified_user: {http_mode}",color='green')
+                    elif uri == "error":
+                        st.badge(f":material/block: 内部问题",color='red')
+                    else:
+                        st.badge(f":material/error: {http_mode}",color='orange')
             if uri != "error":
                 st.link_button(":material/launch: 前往",url=uri)
             else:
                 if st.button(":material/launch: 前往"):
                     vote(description)
-    webli1, webli2, webli3, webli4 = st.columns(4)
+    webli1, webli2, webli3, webli4 = st.columns(4,vertical_alignment=showmode)
     #with webli1:
     if bool(serch):
         more_width = 100
@@ -573,24 +731,48 @@ with tab6:
         st.caption(":material/move_to_inbox: 网站收录内容")
         uul_url = st.text_input("网址",placeholder='必填')
         uul_des = st.text_input("简介",placeholder='选填')
-        st.link_button(":material/how_to_vote: 发送投稿邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH网站收录&body=网址：{uul_url}  简介：{uul_des}", disabled=(uul_url==""))
+        button, rule = st.columns([0.2,0.8], gap="large")
+        with button:
+            if st.button(":material/how_to_vote: 发送投稿邮件", disabled=(uul_url=="")):
+                sent_mail(uri=uul_url, infomation=uul_des, sent_type="contribute")
+        with rule:
+            with st.popover(label=":material/report: 投稿要求",use_container_width=True):
+                with st.expander("《互联网信息服务管理办法》第十五条"):
+                    st.markdown('''互联网信息服务提供都不得制作、复制、发布、传播含有下列内容的信息：  
+1、 反对宪法所确定的基本原则的  
+2、 危害国家安全，泄露国家秘密，颠覆国家政权，破坏国家统一的  
+3、 损害国家荣誉和利益的  
+4、 煽动民族仇恨、民族歧视，破坏民族团结的  
+5、 破坏国家宗教政策，宣扬邪教和封建迷信的  
+6、 散布谣言，扰乱社会秩序，破坏社会稳定的  
+7、 散布淫秽、色情、赌博、暴力、凶杀、恐怖或者教唆犯罪的  
+8、 侮辱或者诽谤他人，侵害他人合法权益的  
+9、 含有法律、行政法规禁止的其他内容的''')
+                with st.expander("《PH网址投稿规定》"):
+                    st.markdown('''1、 站点页面不得包含、插入恶意代码  
+2、 站点不得包含大量盈利内容  
+3、 站点不采用ip地址直连''')
+        #st.link_button(":material/how_to_vote: 发送投稿邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH网站收录&body=网址：{uul_url}  简介：{uul_des}", disabled=(uul_url==""))
     with st.container(border=True):
         st.caption(":material/flag: 站点问题反馈")
         report_types = st.selectbox("类型", [
             'Bug(漏洞，使用问题)',
             '功能建议(新增，修改)',
             '内容问题(侵权，不适宜内容)'
-
         ])
         if report_types == '内容问题(侵权，不适宜内容)':
             report_plate = st.selectbox("板块",['网站收录','友链'])
             report_url = st.text_input("目标地址",placeholder='必填')
         if report_types == '内容问题(侵权，不适宜内容)':
             report_text = st.text_area("详细信息",help='''不知道填什么？ 可填写目标收录网站的违规行为''',placeholder='选填')
-            st.link_button(":material/email: 发送邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH建议：{report_types}&body=板块：{report_plate}  地址：{report_url}  详细信息：{report_text}", disabled=(report_url==""))
+            if st.button(":material/email: 发送邮件", disabled=(report_url=="")):
+                sent_mail(uri={report_types}, infomation=f"板块：{report_plate}，地址：{report_url}", sent_type="report")
+            #st.link_button(":material/email: 发送邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH建议：{report_types}&body=板块：{report_plate}  地址：{report_url}  详细信息：{report_text}", disabled=(report_url==""))
         else:
             report_text = st.text_area("详细信息",help='''不知道填什么？ 可填写某功能出现的异常现象或你需要的新功能或对已有的功能提出建议''',placeholder='必填')
-            st.link_button(":material/email: 发送邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH建议：{report_types}&body=详细信息：{report_text}", disabled=(report_text==""))
+            if st.button(":material/email: 发送邮件", disabled=(report_text=="")):
+                sent_mail(uri={report_types}, infomation=f"{report_text}", sent_type="report")
+            #st.link_button(":material/email: 发送邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH建议：{report_types}&body=详细信息：{report_text}", disabled=(report_text==""))
 
 with tab7:
     start_time = datetime(2025, 4, 11, 13, 20, 5)
@@ -632,4 +814,7 @@ with tab7:
                         st.rerun()
             if st.session_state['uplog']:
                 log_version = st.selectbox("版本",options=st.session_state['uplog'])
-                st.code(st.session_state['uplog'][log_version])
+                with st.container(border=True):
+                    #st.write(st.session_state['uplog'])
+                    for op in st.session_state['uplog'][log_version].split(","):
+                        st.write(op)
