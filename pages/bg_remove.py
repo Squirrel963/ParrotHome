@@ -12,6 +12,7 @@ st.set_page_config(page_icon="🦜", layout="wide", page_title="PH - tools")
 
 st.write("## 图像背景清除器")
 
+st.sidebar.page_link("PWUI.py", label="返回主页", icon=":material/home:",use_container_width=True)
 st.sidebar.write("## :material/settings: 文件操作面板")
 
 # Increased file size limit
@@ -116,7 +117,6 @@ def fix_image(upload):
 
 # UI Layout
 col1, col2 = st.columns(2)
-st.sidebar.page_link("PWUI.py", label="返回主页", icon=":material/home:",use_container_width=True)
 my_upload = st.sidebar.file_uploader("上传图像", type=["png", "jpg", "jpeg"])
 
 # Information about limitations
