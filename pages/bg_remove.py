@@ -102,7 +102,8 @@ def fix_image(upload):
             "下载处理后图像", 
             convert_image(fixed), 
             "fixed.png", 
-            "image/png"
+            "image/png",
+            on_click="ignore"
         )
         
         progress_bar.progress(100)
@@ -142,4 +143,4 @@ else:
             fix_image(img_path)
             break
     else:
-        st.info("上传一个文件以开始处理！")
+        st.info("请在左侧面板上传一个文件以开始处理！")
