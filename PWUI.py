@@ -2,6 +2,7 @@
 import streamlit as st
 #from streamlit_elements import elements, mui, html
 from streamlit_geolocation import streamlit_geolocation
+import streamlit_antd_components as sac
 from streamlit_tags import st_tags
 #import streamlit_extras
 from streamlit_card import card
@@ -13,7 +14,7 @@ import pandas as pd
 import random
 from datetime import datetime
 import UPDATECHECK
-requests.packages.urllib3.disable_warnings()
+
 def get_data_from_api(api_url):  
     # 发送GET请求  
     response = requests.get(api_url)  
@@ -70,7 +71,7 @@ def send_email(
     except Exception as e:
         return str(e)
 
-ver = '20250425_P0941'
+ver = '20250426_A0125'
 
 api_key = st.secrets["weather"]["api_key"]
 
@@ -139,6 +140,17 @@ if not st.session_state['randkey']:
 #             conn.close()
 
 #     return status
+def check_ssl_status(hostname:str):
+    try:
+        response = requests.get(hostname)
+        return "succ"
+    except requests.exceptions.Timeout:
+        return "Timeout"
+    except requests.exceptions.SSLError:
+        return "SSLError"
+    except requests.exceptions.RequestException as e:
+        return e
+
 
 @st.dialog("发生错误！")
 def vote(text:str):
@@ -254,11 +266,34 @@ def sent_mail(uri:str, infomation:str, sent_type:str):
             else:
                 st.error("验证码错误！")
 
-# @st.dialog("确认跳转")
-# def jump(url:str):
-#     with st.spinner("检查目标站点中..."):
-#         state = check_ssl_status(url)
-#         st.write(state)
+@st.dialog("确认跳转")
+def jump(url:str):
+    with st.spinner("检查目标站点中..."):
+        state = check_ssl_status(url)
+        if state == "succ":
+            st.write("您即将离开PH并跳转至：")
+            st.code(f"{url}")
+            st.badge("目标站点已通过SSL证书检查",color="green",icon=":material/check:")
+            st.link_button(label="立即跳转",url=url,use_container_width=True,type='primary')
+        else:
+            if state == "SSLError":
+                st.write("您即将离开PH并跳转至：")
+                st.code(f"{url}")
+                st.badge("目标站点未通过SSL证书检查",color="red",icon=":material/close:")
+                with st.popover("确认跳转",use_container_width=True):
+                    st.markdown('''### 警告！
+目标站点未通过SSL证书检查，这意味着您与目标服务器的通信****不再安全****  
+您应该妥善保护您的个人数据，以免被攻击者截获  
+最后，请确认您***信任***该站点后再进行跳转''')
+                    st.link_button(label="无视风险并立即跳转",url=url,use_container_width=True)
+            else:
+                st.write("您即将离开PH并跳转至：")
+                st.code(f"{url}")
+                with st.expander(":material/sms_failed: 出现问题！"):
+                    st.warning(f"{state}")
+                st.write("看起来PH服务器无法验证目标站点的SSL证书，请在访问前自行确保其安全性")
+                st.link_button(label="立即跳转",url=url,use_container_width=True)
+                
 
 st.title("Parrot 导航页")
 tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
@@ -477,6 +512,28 @@ browz_tools = {
     }
 }
 
+online_tools = {
+    "图片处理":[
+            {'label':"图片背景清除工具", 'back':sac.MenuItem('antd-menu', icon='noise-reduction', href='noise-reduction')}
+    ]
+}
+
+tools_dec = {
+    "概述":{
+        "dec":'''# PH工具集合
+这里展示了PH内置的所有工具  
+请在`左侧菜单`选择要使用的工具''',
+        "type":"None",
+        "url":"None"
+        },
+    "图片背景清除工具":{
+        "dec":'''## 一键清除图片背景   
+快速 简单 免费''',
+        "type":"图片处理",
+        "url":"bg_remove.py"
+        }
+}
+
 with tab1:
     col1, col2 = st.columns([0.6, 0.4])
     with col2:
@@ -612,7 +669,27 @@ with tab2:
     #st.write(weather)
 
 with tab3:
-    st.page_link("pages/bg_remove.py", label="图片背景清除工具  ~  PH本站提供", icon=":material/compare:",use_container_width=True)
+    def showtools(uri,label):
+        st.page_link(f"{uri}", label=label, icon=":material/call_made:",use_container_width=True)
+    menu, tools = st.columns([0.3,0.7])
+    with menu:
+        menus = sac.menu([
+            sac.MenuItem('概述', icon='bookmark-star'),#tag=[sac.Tag('Tag1', color='green'), sac.Tag('Tag2', 'red')]
+            sac.MenuItem('图片处理', icon='pencil-square', children=online_tools["图片处理"]),
+            sac.MenuItem(type='divider'),
+            sac.MenuItem('link', type='group', children=[
+                sac.MenuItem('antd-menu', icon='heart-fill', href='https://ant.design/components/menu#menu'),
+                sac.MenuItem('bootstrap-icon', icon='bootstrap-fill', href='https://icons.getbootstrap.com/'),
+            ]),
+        ], size='sm', variant='left-bar', color='blue',height=400)
+        #st.write(menus)
+    with tools:
+        try:
+            st.markdown(tools_dec[menus]['dec'])
+            if not tools_dec[menus]['type'] == "None":
+                st.link_button(label="跳转",url=tools_dec[menus]['url'],use_container_width=True)
+        except:
+            st.info("未找到关于该工具的介绍")
 
 with tab4:
     with st.spinner("加载中..."):
@@ -630,8 +707,9 @@ with tab4:
             }
     serch = st.text_input(":material/search: 搜索", placeholder='搜索网址名称或简介', label_visibility='collapsed')
     with st.popover("显示设置"):
-        beautiful = st.toggle("整齐排版", value=didnt_error,help='通过相关处理来使总体卡片整齐排列；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
-        security = st.toggle("http加密显示", value=True,help='显示目标页面所使用的http连接是否加密')
+        beautiful = st.toggle(":material/poll: 整齐排版", value=didnt_error,help='通过相关处理来使总体卡片整齐排列；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
+        security = st.toggle(":material/vpn_lock: http加密显示", value=True,help='显示目标页面所使用的http连接是否加密')
+        jump_security = st.toggle(":material/security: 安全模式", value=True,help='在跳转前对目标网站进行SSL证书检查')
     if beautiful:
         showmode = "top"
     else:
@@ -660,7 +738,11 @@ with tab4:
                     else:
                         st.badge(f":material/error: {http_mode}",color='orange')
             if uri != "error":
-                st.link_button(":material/launch: 前往",url=uri)
+                if jump_security:
+                    if st.button(":material/launch: 前往",key=f"{uri}"):
+                        jump(url=uri)
+                else:
+                    st.link_button(":material/launch: 前往",url=uri)
             else:
                 if st.button(":material/launch: 前往"):
                     vote(description)
