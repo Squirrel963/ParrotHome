@@ -70,7 +70,7 @@ def send_email(
     except Exception as e:
         return str(e)
 
-ver = '20250419_P0800'
+ver = '20250425_P0941'
 
 api_key = st.secrets["weather"]["api_key"]
 
@@ -164,8 +164,9 @@ def share():
 def sent_mail(uri:str, infomation:str, sent_type:str):
     if sent_type == "contribute":
         if '.' in uri:
-            st.write(f"您准备投稿的地址是{uri}")
-            owner = st.toggle("将站点置于友链")
+            st.write(f"您准备投稿的地址是")
+            st.code(uri)
+            owner = st.checkbox("我是站点所有者（将站点置于友链）")
             if owner:
                 with st.container(border=True):
                     emails = st.text_input("发送该内容需要您提供您的电子邮件地址",help="您的电子邮箱用于后续审核处理，不会被恶意滥用及泄露")
@@ -216,7 +217,7 @@ def sent_mail(uri:str, infomation:str, sent_type:str):
                     else:
                         st.warning(f"邮件发送失败！")
         else:
-            st.write("您填写的网址看起来不像一个真正的网址")
+            st.warning("您填写的网址看起来不像一个真正的网址")
     elif sent_type == "report":
         with st.container(border=True):
             emails = st.text_input("发送该内容需要您提供您的电子邮件地址",help="您的电子邮箱用于后续处理状态追踪订阅，不会被恶意滥用及泄露")
