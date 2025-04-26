@@ -16,6 +16,8 @@ import random
 from datetime import datetime
 import UPDATECHECK
 
+ver = '20250426_P0150'
+
 def get_data_from_api(api_url):  
     # 发送GET请求  
     response = requests.get(api_url)  
@@ -71,8 +73,6 @@ def send_email(
         return 'success'
     except Exception as e:
         return str(e)
-
-ver = '20250426_A1030'
 
 api_key = st.secrets["weather"]["api_key"]
 
@@ -199,15 +199,15 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
                 key_code = st.text_input("您收到的数字验证码")
             if st.button(":material/send: 发送"):
                 if owner:
-                    if key_code == st.session_state['randkey']:
+                    if key_code == f"{st.session_state['randkey']}":
                         with st.spinner("正在发送邮件...请稍等"):
                             asucc = send_email(smtp_server="smtp.163.com",
                                     smtp_port=465,
                                     sender_email=st.secrets["mail"]["email"],
                                     receiver_email=st.secrets["mail"]["target"],
-                                    subject="PH网站收录",
+                                    subject="PH网站友链收录",
                                     sender_password=st.secrets["mail"]["imap"],
-                                    body=f"网址：{uri}，简介：{infomation}",
+                                    body=f"友链网址：{uri}，简介：{infomation}",
                                     use_tls=False)
                         if asucc == "success":
                             st.success("发送成功！")
