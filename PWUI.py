@@ -568,7 +568,7 @@ tools_dec = {
         "dec":'''## 一键清除图片背景   
 快速 简单 免费''',
         "type":"图片处理",
-        "url":"bg_remove"
+        "url":"pages/bg_remove.py"
         }
 }
 
@@ -710,26 +710,28 @@ with tab2:
 
 with tab3:
     def showtools(uri,label):
-        st.page_link(f"{uri}", label=label, icon=":material/call_made:",use_container_width=True)
+        with st.container(border=True):
+            st.page_link(f"{uri}", label=label, icon=":material/call_made:",use_container_width=True)
     menu, tools = st.columns([0.3,0.7])
     with menu:
         menus = sac.menu([
             sac.MenuItem('概述', icon='bookmark-star'),#tag=[sac.Tag('Tag1', color='green'), sac.Tag('Tag2', 'red')]
             sac.MenuItem('图片处理', icon='pencil-square', children=online_tools["图片处理"]),
             sac.MenuItem(type='divider'),
-            sac.MenuItem('link', type='group', children=[
+            sac.MenuItem('关于此菜单', type='group', children=[
                 sac.MenuItem('antd-menu', icon='heart-fill', href='https://ant.design/components/menu#menu'),
                 sac.MenuItem('bootstrap-icon', icon='bootstrap-fill', href='https://icons.getbootstrap.com/'),
             ]),
         ], size='sm', variant='left-bar', color='blue',height=400)
         #st.write(menus)
     with tools:
-        try:
+        #try:
             st.markdown(tools_dec[menus]['dec'])
             if not tools_dec[menus]['type'] == "None":
-                st.link_button(label="跳转",url=tools_dec[menus]['url'],use_container_width=True)
-        except:
-            st.info("未找到关于该工具的介绍")
+                #st.link_button(label="跳转",url=tools_dec[menus]['url'],use_container_width=True)
+                showtools(label="打开",uri=tools_dec[menus]['url'])
+        #except:
+        #    st.info("未找到关于该工具的介绍")
 
 with tab4:
     with st.spinner("加载中..."):
