@@ -91,22 +91,24 @@ def fix_image(upload):
         status_text.text("显示处理结果...")
         
         # Display images
-        # col1.write("原图像")
-        # col1.image(image)
+        col1.write("原图像")
+        col1.image(image)
         
-        # col2.write("处理后图像")
-        # col2.image(fixed)
-        image_comparison(
-            img1=image,
-            img2=fixed,
-            label1="原图像",
-            label2="处理后图像",
-            #width=700,
-            starting_position=50,
-            show_labels=True,
-            make_responsive=True,
-            in_memory=True,
-        )
+        col2.write("处理后图像")
+        col2.image(fixed)
+        st.caption("图片对比")
+        with st.container(border=True,height=600):
+            image_comparison(
+                img1=image,
+                img2=fixed,
+                label1="原图像",
+                label2="处理后图像",
+                width=800,
+                starting_position=50,
+                show_labels=True,
+                make_responsive=True,
+                in_memory=True,
+            )
         
         # Prepare download button
         st.sidebar.markdown("\n")
