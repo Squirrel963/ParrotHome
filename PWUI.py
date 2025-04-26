@@ -10,6 +10,7 @@ import json
 import requests
 # import socket
 # import ssl
+from typing import Literal
 import pandas as pd
 import random
 from datetime import datetime
@@ -71,7 +72,7 @@ def send_email(
     except Exception as e:
         return str(e)
 
-ver = '20250426_A0125'
+ver = '20250426_A1030'
 
 api_key = st.secrets["weather"]["api_key"]
 
@@ -173,7 +174,7 @@ def share():
     )
 
 @st.dialog("发送邮件")
-def sent_mail(uri:str, infomation:str, sent_type:str):
+def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']):
     if sent_type == "contribute":
         if '.' in uri:
             st.write(f"您准备投稿的地址是")
@@ -265,15 +266,24 @@ def sent_mail(uri:str, infomation:str, sent_type:str):
                     st.warning(f"邮件发送失败！")
             else:
                 st.error("验证码错误！")
+                st.text_input()
 
 @st.dialog("确认跳转")
-def jump(url:str):
+def jump(url:str, httpsmode: Literal['https', 'http']):
     with st.spinner("检查目标站点中..."):
-        state = check_ssl_status(url)
+        if httpsmode == 'https':
+            state = check_ssl_status(url)
+        else:
+            state = "http"
         if state == "succ":
             st.write("您即将离开PH并跳转至：")
             st.code(f"{url}")
             st.badge("目标站点已通过SSL证书检查",color="green",icon=":material/check:")
+            st.link_button(label="立即跳转",url=url,use_container_width=True,type='primary')
+        elif state == "http":
+            st.write("您即将离开PH并跳转至：")
+            st.code(f"{url}")
+            st.badge("目标站点采用http链接",color="orange",icon=":material/power_off:")
             st.link_button(label="立即跳转",url=url,use_container_width=True,type='primary')
         else:
             if state == "SSLError":
@@ -281,7 +291,7 @@ def jump(url:str):
                 st.code(f"{url}")
                 st.badge("目标站点未通过SSL证书检查",color="red",icon=":material/close:")
                 with st.popover("确认跳转",use_container_width=True):
-                    st.markdown('''### 警告！
+                    st.markdown('''## :material/warning: 警告！
 目标站点未通过SSL证书检查，这意味着您与目标服务器的通信****不再安全****  
 您应该妥善保护您的个人数据，以免被攻击者截获  
 最后，请确认您***信任***该站点后再进行跳转''')
@@ -326,20 +336,48 @@ engine_links = {
             'hold':"%20"}
 }
 
+# emoj ☁️⛅⛈️🌤️🌥️🌦️🌧️🌨️🌩️❄️🌀🌫️🌪️🌁
 weather_code = {
-    0:':sun:',
-    1:':crescent_moon:',
-    2:':sun:',
-    3:':crescent_moon:',
-    4:':sun_behind_large_cloud:',
-    5:':sun_behind_cloud:',
-    6:':sun_behind_cloud:',
-    7:':sun_behind_small_cloud:',
-    8:':sun_behind_small_cloud:',
-    9:':cloud:',
-    10:':sun_behind_rain_cloud:',
-    11:':cloud_with_lightning_and_rain:',
-    31:':fog:'
+    0:'☀️',
+    1:'🌙',
+    2:'☀️',
+    3:'🌙',
+    4:'🌥️',
+    5:'🌤️',
+    6:'🌤️',
+    7:'⛅',
+    8:'⛅',
+    9:'☁️',
+    10:'🌦️',
+    11:'⛈️',
+    12:'⛈️',
+    13:'🌧️',
+    14:'🌧️',
+    15:'🌧️',
+    16:'🌧️',
+    17:'🌧️',
+    18:'🌧️',
+    19:'🌨️',
+    20:'🌨️',
+    21:'❄️',
+    22:'❄️',
+    23:'❄️',
+    24:'❄️',
+    25:'❄️',
+    26:'🌬️',
+    27:'🏜️',
+    28:'🌬️🏜️',
+    29:'🌪️🏜️',
+    30:'🌁',
+    31:'🌫️',
+    32:'🍃',
+    33:'🍃',
+    34:'🌀',
+    35:'🌀',
+    36:'🌪️',
+    37:'❄️',
+    38:'🌡️',
+    99:'❔'
 }
 
 suggestion_tans = {
@@ -530,7 +568,7 @@ tools_dec = {
         "dec":'''## 一键清除图片背景   
 快速 简单 免费''',
         "type":"图片处理",
-        "url":"bg_remove.py"
+        "url":"bg_remove"
         }
 }
 
@@ -662,6 +700,8 @@ with tab2:
 
             #st.line_chart(chart_data, x="col1", y="col2", color="col3")
     with info2:
+        #with st.container(border=True):
+        #    st.write(weather_code)
         if st.session_state['weatherloaded']:
             for sogs in sorted(st.session_state['weather_helper'].keys()):
                 wearther_sogs(suggestion_tans[sogs], st.session_state['weather_helper'][sogs]['brief'], st.session_state['weather_helper'][sogs]['details'])
@@ -740,7 +780,7 @@ with tab4:
             if uri != "error":
                 if jump_security:
                     if st.button(":material/launch: 前往",key=f"{uri}"):
-                        jump(url=uri)
+                        jump(url=uri,httpsmode=http_mode)
                 else:
                     st.link_button(":material/launch: 前往",url=uri)
             else:
@@ -834,7 +874,7 @@ with tab6:
                 with st.expander("《PH网址投稿规定》"):
                     st.markdown('''1、 站点页面不得包含、插入恶意代码  
 2、 站点不得包含大量盈利内容  
-3、 站点不采用ip地址直连''')
+3、 站点不采用ip直链''')
         #st.link_button(":material/how_to_vote: 发送投稿邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH网站收录&body=网址：{uul_url}  简介：{uul_des}", disabled=(uul_url==""))
     with st.container(border=True):
         st.caption(":material/flag: 站点问题反馈")
