@@ -96,14 +96,14 @@ def fix_image(upload):
         
         col2.write("处理后图像")
         col2.image(fixed)
-        st.caption("图片对比")
-        with st.container(border=True,height=600):
+        with st.container(border=True):
+            st.caption("图片对比")
             image_comparison(
                 img1=image,
                 img2=fixed,
                 label1="原图像",
                 label2="处理后图像",
-                width=800,
+                width=500,
                 starting_position=50,
                 show_labels=True,
                 make_responsive=True,
