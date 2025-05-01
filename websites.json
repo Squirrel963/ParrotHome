@@ -257,6 +257,30 @@
 },
 "Turbowarp": {
 	"url": "https://turbowarp.org/editor",
-	"description": "建议改名为《Scratch++》"
+	"description": "建议改为 Scratch++"
+},
+"HMCL官网": {
+	"url": "https://hmcl.huangyuhui.net/",
+	"description": "~"
+},
+"Arm开发人员社区": {
+	"url": "https://developer.arm.com/",
+	"description": "~"
+},
+"windows7小游戏安装包": {
+	"url": "https://frp-any.com:32998/s/7GTd",
+	"description": "来自SAR云盘"
+},
+"Steam价格库": {
+	"url": "https://steamdb.info/",
+	"description": "游戏价格实时更新、追踪"
+},
+"Java8 官网": {
+	"url": "https://www.java.com/zh-CN/",
+	"description": "~"
+},
+"mc皮肤色调更改": {
+	"url": "https://www.mcskinrecolor.com/",
+	"description": "在线更改皮肤色调，无需自行手动调色"
 }
 }
