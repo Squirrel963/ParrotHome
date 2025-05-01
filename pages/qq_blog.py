@@ -8,8 +8,7 @@ st.sidebar.page_link("PWUI.py", label="返回主页", icon=":material/home:",use
 st.title("QQ空间跳转器")
 qq = st.text_input("QQ号", help="在此填入要查看的QQ空间的QQ号")
 
-with st.container(border=True):
-    option_map = {
+option_map = {
         "主页" : "main",#:material/mode_comment:
         "相册" : "photo",#:material/insert_photo:
         "留言板" : "334",#:material/note: 
@@ -17,8 +16,8 @@ with st.container(border=True):
         "个人档" : "1",#:material/person:
         "音乐" : "305",#:material/queue_music:
         "收藏" : "favorite"#:material/star:
-    }
-    selection = sac.segmented(
+}
+selection = sac.segmented(
         items=[
             sac.SegmentedItem(label='主页', icon='book'),
             sac.SegmentedItem(label='相册', icon='collection'),
@@ -27,7 +26,7 @@ with st.container(border=True):
             sac.SegmentedItem(label='个人档', icon='file-earmark-person'),
             sac.SegmentedItem(label='音乐', icon='music-note-list'),
             sac.SegmentedItem(label='收藏', icon='clipboard-heart'),
-        ], label='label', align='center', divider=False, use_container_width=True
+        ], label='', align='center', divider=False, use_container_width=True
     )
 
 if not selection == None and not qq == "":
