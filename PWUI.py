@@ -16,7 +16,7 @@ import random
 from datetime import datetime
 import UPDATECHECK
 
-ver = '20250426_P0150'
+ver = '20250501_P0740'
 
 def get_data_from_api(api_url):  
     # 发送GET请求  
@@ -91,56 +91,6 @@ for i in caches:
 if not st.session_state['randkey']:
     st.session_state['randkey'] = random.randint(1000000,9999999)
 
-# def check_ssl_status(shostname:str, port=443):
-#     """
-#     检查指定主机的SSL证书状态
-
-#     参数：
-#     hostname (str): 要检查的主机名
-#     port (int): 要检查的端口，默认是443
-
-#     返回：
-#     str: 表示SSL证书状态的字符串，可能的值包括：
-#          - "SSL证书正常"
-#          - "SSL证书已过期"
-#          - "SSL证书无效"
-#          - "连接超时"
-#     """
-#     context = ssl.create_default_context()
-#     conn = None
-#     status = "ssSSL证书无效"
-#     hostname = socket.gethostbyname(shostname.replace("/","").replace("https:","").replace("http:",""))
-#     st.write(hostname)
-
-#     try:
-#         conn = context.wrap_socket(
-#             socket.socket(socket.AF_INET),
-#             server_hostname=hostname,
-#         )
-#         conn.settimeout(3.0)
-#         conn.connect((hostname, port))
-#         cert = conn.getpeercert()
-
-#         # 获取SSL证书到期时间
-#         expiry_date = datetime.strptime(cert['notAfter'], '%b %d %H:%M:%S %Y %Z')
-
-#         # 检查SSL证书是否过期
-#         if expiry_date < datetime.now():
-#             status = "SSL证书已过期"
-#         else:
-#             status = "SSL证书正常"
-
-#     except ssl.SSLError as e:
-#         status = "SSL证书无效SSLError"
-#     except socket.timeout:
-#         status = "站点连接超时"
-#     except Exception as e:
-#         status = f"SSL证书无效{e}"
-#     finally:
-#         if conn:
-#             conn.close()
-
-#     return status
 def check_ssl_status(hostname:str):
     try:
         response = requests.get(hostname)
@@ -173,7 +123,7 @@ def share():
         icon=":material/download:",
     )
 
-@st.dialog("发送邮件")
+@st.dialog("准备发送申请")
 def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']):
     if sent_type == "contribute":
         if '.' in uri:
@@ -182,10 +132,10 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
             owner = st.checkbox("我是站点所有者（将站点置于友链）")
             if owner:
                 with st.container(border=True):
-                    emails = st.text_input("发送该内容需要您提供您的电子邮件地址",help="您的电子邮箱用于后续审核处理，不会被恶意滥用及泄露")
-                    if emails != "" and "@" in emails:
+                    emails = st.text_input("投稿该内容需要您提供您的电子邮件地址",help="您的电子邮箱用于后续审核处理，不会被恶意滥用及泄露")
+                    if emails != "" and "@" in emails and "." in emails:
                         if st.button(":material/vpn_key: 发送验证邮件"):
-                            with st.spinner("正在发送邮件...请稍等"):
+                            with st.spinner("正在发送邮件...很快就好"):
                                 asucc = send_email(smtp_server="smtp.163.com",
                                         smtp_port=465,
                                         sender_email=st.secrets["mail"]["email"],
@@ -197,10 +147,10 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
                                 if asucc == "success":
                                     st.session_state['sent'] = emails
                 key_code = st.text_input("您收到的数字验证码")
-            if st.button(":material/send: 发送"):
+            if st.button(":material/send: 发送申请"):
                 if owner:
                     if key_code == f"{st.session_state['randkey']}":
-                        with st.spinner("正在发送邮件...请稍等"):
+                        with st.spinner("正在发送投稿申请..."):
                             asucc = send_email(smtp_server="smtp.163.com",
                                     smtp_port=465,
                                     sender_email=st.secrets["mail"]["email"],
@@ -212,11 +162,11 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
                         if asucc == "success":
                             st.success("发送成功！")
                         else:
-                            st.warning(f"邮件发送失败！")
+                            st.warning(f"申请发送失败！")
                     else:
                         st.error("验证码错误！")
                 else:
-                    with st.spinner("正在发送邮件...请稍等"):
+                    with st.spinner("正在发送投稿申请..."):
                         asucc = send_email(smtp_server="smtp.163.com",
                                     smtp_port=465,
                                     sender_email=st.secrets["mail"]["email"],
@@ -234,9 +184,9 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
     elif sent_type == "report":
         with st.container(border=True):
             emails = st.text_input("发送该内容需要您提供您的电子邮件地址",help="您的电子邮箱用于后续处理状态追踪订阅，不会被恶意滥用及泄露")
-            if emails != "" and "@" in emails:
+            if emails != "" and "@" in emails and "." in emails:
                 if st.button(":material/vpn_key: 发送验证邮件"):
-                    with st.spinner("正在发送邮件...请稍等"):
+                    with st.spinner("正在发送邮件...很快就好"):
                         asucc = send_email(smtp_server="smtp.163.com",
                                 smtp_port=465,
                                 sender_email=st.secrets["mail"]["email"],
@@ -248,9 +198,9 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
                         if asucc == "success":
                             st.session_state['sent'] = emails
         key_code = st.text_input("您收到的数字验证码")
-        if st.button(":material/send: 发送"):
+        if st.button(":material/send: 发送反馈"):
             if key_code == f"{st.session_state['randkey']}":
-                with st.spinner("正在发送邮件...请稍等"):
+                with st.spinner("正在发送反馈...请稍等"):
                     asucc = send_email(smtp_server="smtp.163.com",
                             smtp_port=465,
                             sender_email=st.secrets["mail"]["email"],
@@ -263,7 +213,7 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
                     st.success("发送成功！")
                     st.session_state['randkey'] = random.randint(1000000,9999999)
                 else:
-                    st.warning(f"邮件发送失败！")
+                    st.warning(f"反馈发送失败！")
             else:
                 st.error("验证码错误！")
                 st.text_input()
@@ -862,7 +812,7 @@ with tab6:
                 sent_mail(uri=uul_url, infomation=uul_des, sent_type="contribute")
         with rule:
             with st.popover(label=":material/report: 投稿要求",use_container_width=True):
-                with st.expander("《互联网信息服务管理办法》第十五条"):
+                with st.expander("《互联网信息服务管理办法》第十五条（2024版本）",icon=":material/bookmark:"):
                     st.markdown('''互联网信息服务提供都不得制作、复制、发布、传播含有下列内容的信息：  
 1、 反对宪法所确定的基本原则的  
 2、 危害国家安全，泄露国家秘密，颠覆国家政权，破坏国家统一的  
@@ -873,10 +823,12 @@ with tab6:
 7、 散布淫秽、色情、赌博、暴力、凶杀、恐怖或者教唆犯罪的  
 8、 侮辱或者诽谤他人，侵害他人合法权益的  
 9、 含有法律、行政法规禁止的其他内容的''')
-                with st.expander("《PH网址投稿规定》"):
-                    st.markdown('''1、 站点页面不得包含、插入恶意代码  
-2、 站点不得包含大量盈利内容  
-3、 站点不采用ip直链''')
+                with st.expander("《PH网址投稿规定》",icon=":material/bookmark:"):
+                    st.markdown('''在站点遵守《互联网信息服务管理办法》时按照以下审核：  
+1、 站点页面不得包含、插入恶意代码  
+2、 站点不得包含大量盈利内容（广告占屏面积不超过30%）  
+3、 站点不采用ip直链（访问链接不为ipv4或ipv6）  
+4、 站点地址不受DNS污染影响''')
         #st.link_button(":material/how_to_vote: 发送投稿邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH网站收录&body=网址：{uul_url}  简介：{uul_des}", disabled=(uul_url==""))
     with st.container(border=True):
         st.caption(":material/flag: 站点问题反馈")
