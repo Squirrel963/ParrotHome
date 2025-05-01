@@ -502,7 +502,10 @@ browz_tools = {
 
 online_tools = {
     "图片处理":[
-            {'label':"图片背景清除工具", 'back':sac.MenuItem('antd-menu', icon='noise-reduction', href='noise-reduction')}
+            sac.MenuItem('图片背景清除工具', icon='noise-reduction')
+    ],
+    "网址工具":[
+            sac.MenuItem('QQ空间跳转器', icon='box-arrow-up-right')
     ]
 }
 
@@ -519,6 +522,13 @@ tools_dec = {
 快速 简单 免费''',
         "type":"图片处理",
         "url":"pages/bg_remove.py"
+        },
+    "QQ空间跳转器":{
+        "dec":'''## QQ空间跳转器  
+仅需TA的QQ号，无需登录即可查看TA的QQ空间  
+（除对方设置黑/白名单）''',
+        "type":"网址工具",
+        "url":"pages/qq_blog.py"
         }
 }
 
@@ -667,11 +677,12 @@ with tab3:
         menus = sac.menu([
             sac.MenuItem('概述', icon='bookmark-star'),#tag=[sac.Tag('Tag1', color='green'), sac.Tag('Tag2', 'red')]
             sac.MenuItem('图片处理', icon='pencil-square', children=online_tools["图片处理"]),
+            sac.MenuItem('网址工具', icon='globe2', children=online_tools["网址工具"]),
             sac.MenuItem(type='divider'),
-            sac.MenuItem('关于此菜单', type='group', children=[
-                sac.MenuItem('antd-menu', icon='heart-fill', href='https://ant.design/components/menu#menu'),
-                sac.MenuItem('bootstrap-icon', icon='bootstrap-fill', href='https://icons.getbootstrap.com/'),
-            ]),
+            #sac.MenuItem('关于此菜单', type='group', children=[
+            #    sac.MenuItem('antd-menu', icon='heart-fill', href='https://ant.design/components/menu#menu'),
+            #    sac.MenuItem('bootstrap-icon', icon='bootstrap-fill', href='https://icons.getbootstrap.com/'),
+            #]),
         ], size='sm', variant='left-bar', color='blue',height=400)
         #st.write(menus)
     with tools:
