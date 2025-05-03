@@ -282,5 +282,9 @@
 "mc皮肤色调更改": {
 	"url": "https://www.mcskinrecolor.com/",
 	"description": "在线更改皮肤色调，无需自行手动调色"
+},
+"Steam创意工坊下载器": {
+	"url": "https://steamworkshopdownloader.io",
+	"description": "将Steam创意工坊链接转换为SteamCmd命令"
 }
 }
