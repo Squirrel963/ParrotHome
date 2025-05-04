@@ -266,9 +266,13 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     ":material/share: 关于本站"])
 
 engine_links = {
-    'Bing':{'text':"https://cn.bing.com/search?q=",
-            'image':"https://cn.bing.com/images/search?q=",
-            'video':"https://cn.bing.com/videos/search?q=",
+    'Bing/国内版':{'text':"https://cn.bing.com/search?ensearch=0%q=",
+            'image':"https://cn.bing.com/images/search?ensearch=0%q=",
+            'video':"https://cn.bing.com/videos/search?ensearch=0%q=",
+            'hold':"%20"},
+    'Bing/国际版':{'text':"https://cn.bing.com/search?ensearch=1%q=",
+            'image':"https://cn.bing.com/images/search?ensearch=1%q=",
+            'video':"https://cn.bing.com/videos/search?ensearch=1%q=",
             'hold':"%20"},
     '百度':{'text':"https://www.baidu.com/s?wd=",
           'image':"https://image.baidu.com/search/index?tn=baiduimage&word=",
@@ -536,7 +540,7 @@ with tab1:
     col1, col2 = st.columns([0.6, 0.4])
     with col2:
         with st.container(border=True):
-            engine = st.selectbox(":material/web: 搜索引擎",['Bing','百度','360搜索','搜狗','yandex'])
+            engine = st.selectbox(":material/web: 搜索引擎",['Bing/国内版','Bing/国际版','百度','360搜索','搜狗','yandex'])
             mode = st.radio(
                 ":material/description: 搜索项目",
                 [":material/explore: 默认", ":material/wallpaper: 图片", ":material/movie: 视频"],
