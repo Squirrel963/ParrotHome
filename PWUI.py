@@ -77,7 +77,7 @@ def send_email(
 api_key = st.secrets["weather"]["api_key"]
 
 st.set_page_config(
-    page_title="Parrot导航页",
+    page_title="Parrot Nav",
     page_icon="🦜",
     layout="wide",
     initial_sidebar_state="auto",
@@ -112,12 +112,12 @@ def vote(text:str):
 def share():
     st.balloons()
     st.write("地址：")
-    st.code(f"https://parrothome.streamlit.app/")
+    st.code(f"https://prtnav.streamlit.app/")
     st.download_button(
         label="下载地址文本",
-        data='''地址：https://parrothome.streamlit.app/
+        data='''地址：https://prtnav.streamlit.app/
 欢迎常来！''',
-        file_name="Parrot导航页地址.txt",
+        file_name="ParrotNav导航页地址.txt",
         on_click="ignore",
         type="primary",
         icon=":material/download:",
@@ -140,9 +140,9 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
                                         smtp_port=465,
                                         sender_email=st.secrets["mail"]["email"],
                                         receiver_email=emails,
-                                        subject="PH邮箱身份验证",
+                                        subject="ParrotNav邮箱身份验证",
                                         sender_password=st.secrets["mail"]["imap"],
-                                        body=f'''您正在PH上投稿一个友链，如果这不是您本人所为，请忽略本邮件。请填入该验证码以继续操作：{st.session_state['randkey']}''',
+                                        body=f'''您正在ParrotNav上投稿一个友链，如果这不是您本人所为，请忽略本邮件。请填入该验证码以继续操作：{st.session_state['randkey']}''',
                                         use_tls=False)
                                 if asucc == "success":
                                     st.session_state['sent'] = emails
@@ -155,7 +155,7 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
                                     smtp_port=465,
                                     sender_email=st.secrets["mail"]["email"],
                                     receiver_email=st.secrets["mail"]["target"],
-                                    subject="PH网站友链收录",
+                                    subject="ParrotNav友链收录",
                                     sender_password=st.secrets["mail"]["imap"],
                                     body=f"友链网址：{uri}，简介：{infomation}",
                                     use_tls=False)
@@ -171,7 +171,7 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
                                     smtp_port=465,
                                     sender_email=st.secrets["mail"]["email"],
                                     receiver_email=st.secrets["mail"]["target"],
-                                    subject="PH网站收录",
+                                    subject="ParrotNav收录",
                                     sender_password=st.secrets["mail"]["imap"],
                                     body=f"网址：{uri}，简介：{infomation}",
                                     use_tls=False)
@@ -191,9 +191,9 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
                                 smtp_port=465,
                                 sender_email=st.secrets["mail"]["email"],
                                 receiver_email=emails,
-                                subject="PH邮箱身份验证",
+                                subject="ParrotNav邮箱身份验证",
                                 sender_password=st.secrets["mail"]["imap"],
-                                body=f'''您正在PH上汇报一个问题，如果这不是您本人所为，请忽略本邮件。请填入该验证码以继续操作：{st.session_state['randkey']}''',
+                                body=f'''您正在ParrotNav上汇报一个问题，如果这不是您本人所为，请忽略本邮件。请填入该验证码以继续操作：{st.session_state['randkey']}''',
                                 use_tls=False)
                         if asucc == "success":
                             st.session_state['sent'] = emails
@@ -205,7 +205,7 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
                             smtp_port=465,
                             sender_email=st.secrets["mail"]["email"],
                             receiver_email=st.secrets["mail"]["target"],
-                            subject="PH网站问题反馈",
+                            subject="ParrotNav网站问题反馈",
                             sender_password=st.secrets["mail"]["imap"],
                             body=f"{uri}，追踪邮箱：{st.session_state['sent']}，问题：'{infomation}'",
                             use_tls=False)
@@ -226,18 +226,18 @@ def jump(url:str, httpsmode: Literal['https', 'http']):
         else:
             state = "http"
         if state == "succ":
-            st.write("您即将离开PH并跳转至：")
+            st.write("您即将离开ParrotNav并跳转至：")
             st.code(f"{url}")
             st.badge("目标站点已通过SSL证书检查",color="green",icon=":material/check:")
             st.link_button(label="立即跳转",url=url,use_container_width=True,type='primary')
         elif state == "http":
-            st.write("您即将离开PH并跳转至：")
+            st.write("您即将离开ParrotNav并跳转至：")
             st.code(f"{url}")
             st.badge("目标站点采用http链接",color="orange",icon=":material/power_off:")
             st.link_button(label="立即跳转",url=url,use_container_width=True,type='primary')
         else:
             if state == "SSLError":
-                st.write("您即将离开PH并跳转至：")
+                st.write("您即将离开ParrotNav并跳转至：")
                 st.code(f"{url}")
                 st.badge("目标站点未通过SSL证书检查",color="red",icon=":material/close:")
                 with st.popover("确认跳转",use_container_width=True):
@@ -247,15 +247,15 @@ def jump(url:str, httpsmode: Literal['https', 'http']):
 最后，请确认您***信任***该站点后再进行跳转''')
                     st.link_button(label="无视风险并立即跳转",url=url,use_container_width=True)
             else:
-                st.write("您即将离开PH并跳转至：")
+                st.write("您即将离开ParrotNav并跳转至：")
                 st.code(f"{url}")
                 with st.expander(":material/sms_failed: 出现问题！"):
                     st.warning(f"{state}")
-                st.write("看起来PH服务器无法验证目标站点的SSL证书，请在访问前自行确保其安全性")
+                st.write("看起来ParrotNav服务器无法验证目标站点的SSL证书，请在访问前自行确保其安全性")
                 st.link_button(label="立即跳转",url=url,use_container_width=True)
                 
 
-st.title("Parrot 导航页")
+st.title("Parrot Nav")
 tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     ":material/search: 搜索引擎", 
     ":material/layers: 资讯卡片", 
@@ -511,8 +511,8 @@ online_tools = {
 
 tools_dec = {
     "概述":{
-        "dec":'''# PH工具集合
-这里展示了PH内置的所有工具  
+        "dec":'''# ParrotNav工具集合
+这里展示了ParrotNav内置的所有工具  
 请在`左侧菜单`选择要使用的工具''',
         "type":"None",
         "url":"None"
@@ -610,7 +610,7 @@ with tab2:
                     with loc1:
                         earth_location = streamlit_geolocation()
                     with loc2:
-                        st.text("点按左侧按钮以允许PH获取您的位置信息")
+                        st.text("点按左侧按钮以允许ParrotNav获取您的位置信息")
                     location = f'{earth_location["latitude"]}:{earth_location["longitude"]}'
                     st.session_state['location'] = earth_location
                 else:
@@ -834,13 +834,13 @@ with tab6:
 7、 散布淫秽、色情、赌博、暴力、凶杀、恐怖或者教唆犯罪的  
 8、 侮辱或者诽谤他人，侵害他人合法权益的  
 9、 含有法律、行政法规禁止的其他内容的''')
-                with st.expander("《PH网址投稿规定》",icon=":material/bookmark:"):
+                with st.expander("《ParrotNav网址投稿规定》",icon=":material/bookmark:"):
                     st.markdown('''在站点遵守《互联网信息服务管理办法》时按照以下审核：  
 1、 站点页面不得包含、插入恶意代码  
 2、 站点不得包含大量盈利内容（广告占屏面积不超过30%）  
 3、 站点不采用ip直链（访问链接不为ipv4或ipv6）  
 4、 站点地址不受DNS污染影响''')
-        #st.link_button(":material/how_to_vote: 发送投稿邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH网站收录&body=网址：{uul_url}  简介：{uul_des}", disabled=(uul_url==""))
+        #st.link_button(":material/how_to_vote: 发送投稿邮件",url=f"mailto:wycc_wycserver@163.com?subject=ParrotNav网站收录&body=网址：{uul_url}  简介：{uul_des}", disabled=(uul_url==""))
     with st.container(border=True):
         st.caption(":material/flag: 站点问题反馈")
         report_types = st.selectbox("类型", [
@@ -855,12 +855,12 @@ with tab6:
             report_text = st.text_area("详细信息",help='''不知道填什么？ 可填写目标收录网站的违规行为''',placeholder='选填')
             if st.button(":material/email: 发送邮件", disabled=(report_url=="")):
                 sent_mail(uri={report_types}, infomation=f"板块：{report_plate}，地址：{report_url}", sent_type="report")
-            #st.link_button(":material/email: 发送邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH建议：{report_types}&body=板块：{report_plate}  地址：{report_url}  详细信息：{report_text}", disabled=(report_url==""))
+            #st.link_button(":material/email: 发送邮件",url=f"mailto:wycc_wycserver@163.com?subject=ParrotNav建议：{report_types}&body=板块：{report_plate}  地址：{report_url}  详细信息：{report_text}", disabled=(report_url==""))
         else:
             report_text = st.text_area("详细信息",help='''不知道填什么？ 可填写某功能出现的异常现象或你需要的新功能或对已有的功能提出建议''',placeholder='必填')
             if st.button(":material/email: 发送邮件", disabled=(report_text=="")):
                 sent_mail(uri={report_types}, infomation=f"{report_text}", sent_type="report")
-            #st.link_button(":material/email: 发送邮件",url=f"mailto:wycc_wycserver@163.com?subject=PH建议：{report_types}&body=详细信息：{report_text}", disabled=(report_text==""))
+            #st.link_button(":material/email: 发送邮件",url=f"mailto:wycc_wycserver@163.com?subject=ParrotNav建议：{report_types}&body=详细信息：{report_text}", disabled=(report_text==""))
 
 with tab7:
     start_time = datetime(2025, 4, 11, 13, 20, 5)
@@ -870,7 +870,7 @@ with tab7:
     diff_seconds = time_diff.seconds
     diff_hours = diff_seconds // 3600
     diff_minutes = (diff_seconds % 3600) // 60
-    st.subheader(" 关于 Parrot Home")
+    st.subheader(" 关于 Parrot Nav")
     infocol1, infocol2 = st.columns([0.7, 0.3])
     with infocol1:
         with st.container(border=True):
@@ -879,16 +879,15 @@ with tab7:
 包含多搜索引擎跳转、网址合集、资讯卡片等''')
         with st.container(border=True):
             st.markdown(f'''##### 运营
-负责人&站长：wycc  
-托管账户提供者：squirrel963（github）  
+squirrel963（github）  
 运行：本站点托管于streamlit社区云  
 总服务时长：{diff_days}d {diff_hours}h {diff_minutes}min  
 内部版本：{ver}  
 开源许可证：GPL-3.0''')
         with st.container(border=True):
             st.markdown('''##### 免责声明
-本站点仅提供第三方网页跳转服务  
-本身不存储任何用户数据及服务用数据  
+本站点仅提供第三方网页跳转及工具服务  
+本身不存储任何用户信息及服务用数据  
 数据均来自第三方，与本站无关''')
         if st.button(":material/share: 分享该站点！",use_container_width=True):
             share()
