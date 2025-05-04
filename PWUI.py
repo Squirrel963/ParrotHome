@@ -509,7 +509,8 @@ online_tools = {
             sac.MenuItem('图片背景清除工具', icon='noise-reduction')
     ],
     "网址工具":[
-            sac.MenuItem('QQ空间跳转器', icon='box-arrow-up-right')
+            sac.MenuItem('QQ空间跳转器', icon='box-arrow-up-right'),
+            sac.MenuItem('MineCraft价格监控', icon='graph-up')
     ]
 }
 
@@ -533,6 +534,13 @@ tools_dec = {
 （除对方设置黑/白名单）''',
         "type":"网址工具",
         "url":"pages/qq_blog.py"
+        },
+    "MineCraft价格监控":{
+        "dec":'''## MineCraft价格监控
+记录MineCraft的历史价格变化  
+以及近期价格波动''',
+        "type":"网址工具",
+        "url":"pages/mc_price.py"
         }
 }
 
