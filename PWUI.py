@@ -16,7 +16,7 @@ import random
 from datetime import datetime
 import UPDATECHECK
 
-ver = '20250501_P0740'
+ver = '20250504_P1105'
 
 def get_data_from_api(api_url):  
     # 发送GET请求  
