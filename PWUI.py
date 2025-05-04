@@ -266,13 +266,13 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     ":material/share: 关于本站"])
 
 engine_links = {
-    'Bing/国内版':{'text':"https://cn.bing.com/search?ensearch=0%q=",
-            'image':"https://cn.bing.com/images/search?ensearch=0%q=",
-            'video':"https://cn.bing.com/videos/search?ensearch=0%q=",
+    'Bing/国内版':{'text':"https://cn.bing.com/search?ensearch=0&q=",
+            'image':"https://cn.bing.com/images/search?ensearch=0&q=",
+            'video':"https://cn.bing.com/videos/search?ensearch=0&q=",
             'hold':"%20"},
-    'Bing/国际版':{'text':"https://cn.bing.com/search?ensearch=1%q=",
-            'image':"https://cn.bing.com/images/search?ensearch=1%q=",
-            'video':"https://cn.bing.com/videos/search?ensearch=1%q=",
+    'Bing/国际版':{'text':"https://cn.bing.com/search?ensearch=1&q=",
+            'image':"https://cn.bing.com/images/search?ensearch=1&q=",
+            'video':"https://cn.bing.com/videos/search?ensearch=1&q=",
             'hold':"%20"},
     '百度':{'text':"https://www.baidu.com/s?wd=",
           'image':"https://image.baidu.com/search/index?tn=baiduimage&word=",
