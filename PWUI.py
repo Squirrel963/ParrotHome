@@ -16,7 +16,7 @@ import random
 from datetime import datetime
 import UPDATECHECK
 
-ver = '20250504_P1105'
+ver = '20250505_P0135'
 
 def get_data_from_api(api_url):  
     # 发送GET请求  
@@ -721,10 +721,23 @@ with tab4:
                 }
             }
     serch = st.text_input(":material/search: 搜索", placeholder='搜索网址名称或简介', label_visibility='collapsed')
-    with st.popover("显示设置"):
-        beautiful = st.toggle(":material/poll: 整齐排版", value=didnt_error,help='通过相关处理来使总体卡片整齐排列；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
-        security = st.toggle(":material/vpn_lock: http加密显示", value=True,help='显示目标页面所使用的http连接是否加密')
-        jump_security = st.toggle(":material/security: 安全模式", value=True,help='在跳转前对目标网站进行SSL证书检查')
+    setting1, setting2 = st.columns([0.15,0.85])
+    with setting1:
+        with st.popover(":material/aspect_ratio: 显示设置",use_container_width=True):
+            beautiful = st.toggle(":material/poll: 整齐排版", value=didnt_error,help='通过相关处理来使总体卡片整齐排列；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
+            security = st.toggle(":material/vpn_lock: http加密显示", value=True,help='显示目标页面所使用的http连接是否加密')
+            jump_security = st.toggle(":material/security: 安全模式", value=True,help='在跳转前对目标网站进行SSL证书检查')
+    with setting2:
+        if st.button(":material/repeat: 随机抽取网址并访问",use_container_width=True):
+            templist = websites.keys()
+            urilist = []
+            for i in templist:
+                urilist.append(websites[i]['url'])
+            target = url=random.choice(urilist)
+            if "https" in target:
+                jump(url=target,httpsmode='https')
+            else:
+                jump(url=target,httpsmode='http')
     if beautiful:
         showmode = "top"
     else:
