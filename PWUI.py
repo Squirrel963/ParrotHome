@@ -510,7 +510,7 @@ online_tools = {
     ],
     "网址工具":[
             sac.MenuItem('QQ空间跳转器', icon='box-arrow-up-right'),
-            sac.MenuItem('MineCraft价格监控', icon='graph-up')
+            sac.MenuItem('MineCraft价格监测', icon='graph-up')
     ]
 }
 
@@ -535,8 +535,8 @@ tools_dec = {
         "type":"网址工具",
         "url":"pages/qq_blog.py"
         },
-    "MineCraft价格监控":{
-        "dec":'''## MineCraft价格监控
+    "MineCraft价格监测":{
+        "dec":'''## MineCraft价格监测
 记录MineCraft的历史价格变化  
 以及近期价格波动''',
         "type":"网址工具",
