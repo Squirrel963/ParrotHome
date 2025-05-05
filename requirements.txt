@@ -1,1 +1,2 @@
 rembg==2.0.55
+streamlit_extras==0.6.0
