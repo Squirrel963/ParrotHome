@@ -11,12 +11,12 @@ import requests
 # import socket
 # import ssl
 from typing import Literal
-import pandas as pd
+#import pandas as pd
 import random
 from datetime import datetime
 import UPDATECHECK
 
-ver = '20250505_P0135'
+ver = '20250510_A0950'
 
 def get_data_from_api(api_url):  
     # 发送GET请求  
@@ -114,7 +114,7 @@ def share():
     st.write("地址：")
     st.code(f"https://prtnav.streamlit.app/")
     st.download_button(
-        label="下载地址文本",
+        label="下载地址文本文件 [txt]",
         data='''地址：https://prtnav.streamlit.app/
 欢迎常来！''',
         file_name="ParrotNav导航页地址.txt",
@@ -132,7 +132,7 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
             owner = st.checkbox("我是站点所有者（将站点置于友链）")
             if owner:
                 with st.container(border=True):
-                    emails = st.text_input("投稿该内容需要您提供您的电子邮件地址",help="您的电子邮箱用于后续审核处理，不会被恶意滥用及泄露")
+                    emails = st.text_input("投稿该内容需要您提供您的电子邮件地址",help="您的电子邮箱用于后续审核处理，不会被恶意滥用及泄露", placeholder='您的电子邮件地址')
                     if emails != "" and "@" in emails and "." in emails:
                         if st.button(":material/vpn_key: 发送验证邮件"):
                             with st.spinner("正在发送邮件...很快就好"):
@@ -146,7 +146,7 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
                                         use_tls=False)
                                 if asucc == "success":
                                     st.session_state['sent'] = emails
-                key_code = st.text_input("您收到的数字验证码")
+                key_code = st.text_input(label="email code", label_visibility='collapsed', placeholder="您收到的数字验证码")
             if st.button(":material/send: 发送申请"):
                 if owner:
                     if key_code == f"{st.session_state['randkey']}":
@@ -183,7 +183,7 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
             st.warning("您填写的网址看起来不像一个真正的网址")
     elif sent_type == "report":
         with st.container(border=True):
-            emails = st.text_input("发送该内容需要您提供您的电子邮件地址",help="您的电子邮箱用于后续处理状态追踪订阅，不会被恶意滥用及泄露")
+            emails = st.text_input("发送该内容需要您提供您的电子邮件地址",help="您的电子邮箱用于后续处理状态追踪订阅，不会被恶意滥用及泄露", placeholder='您的电子邮件地址')
             if emails != "" and "@" in emails and "." in emails:
                 if st.button(":material/vpn_key: 发送验证邮件"):
                     with st.spinner("正在发送邮件...很快就好"):
@@ -197,7 +197,7 @@ def sent_mail(uri:str, infomation:str, sent_type:Literal['contribute', 'report']
                                 use_tls=False)
                         if asucc == "success":
                             st.session_state['sent'] = emails
-        key_code = st.text_input("您收到的数字验证码")
+        key_code = st.text_input(label="email code", label_visibility='collapsed', placeholder="您收到的数字验证码")
         if st.button(":material/send: 发送反馈"):
             if key_code == f"{st.session_state['randkey']}":
                 with st.spinner("正在发送反馈...请稍等"):
@@ -242,10 +242,10 @@ def jump(url:str, httpsmode: Literal['https', 'http']):
                 st.badge("目标站点未通过SSL证书检查",color="red",icon=":material/close:")
                 with st.popover("确认跳转",use_container_width=True):
                     st.markdown('''## :material/warning: 警告！
-目标站点未通过SSL证书检查，这意味着您与目标服务器的通信****不再安全****  
-您应该妥善保护您的个人数据，以免被攻击者截获  
+目标站点未通过SSL证书检查，这意味着您与目标服务器的 *通信* ****不再安全****  
+您应该妥善保护您的*个人数据与信息*，以免被攻击者截获  
 最后，请确认您***信任***该站点后再进行跳转''')
-                    st.link_button(label="无视风险并立即跳转",url=url,use_container_width=True)
+                    st.link_button(label=":material/lock_open: 无视风险并立即跳转",url=url,use_container_width=True)
             else:
                 st.write("您即将离开ParrotNav并跳转至：")
                 st.code(f"{url}")
@@ -524,7 +524,8 @@ tools_dec = {
         },
     "图片背景清除工具":{
         "dec":'''## 一键清除图片背景   
-快速 简单 免费''',
+快速 简单 免费  
+该工具因为某些问题，导致加载时间非常长，打开时请***耐心等待***''',
         "type":"图片处理",
         "url":"pages/bg_remove.py"
         },
@@ -661,14 +662,14 @@ with tab2:
                 st.subheader("您的位置信息")
                 st.markdown(f'''纬度：{st.session_state['location']["latitude"]}  
 经度：{st.session_state['location']["longitude"]}''')
-        if st.session_state['weatherloaded']:
-            chart_data = pd.DataFrame(
-                {
-                    "col1": [1,2,3,4],
-                    "col2": [2,3,4,5],
-                    "col3": None,
-                }
-            )
+        # if st.session_state['weatherloaded']:
+        #     chart_data = pd.DataFrame(
+        #         {
+        #             "col1": [1,2,3,4],
+        #             "col2": [2,3,4,5],
+        #             "col3": None,
+        #         }
+        #     )
 
             #st.line_chart(chart_data, x="col1", y="col2", color="col3")
     with info2:
@@ -698,13 +699,13 @@ with tab3:
         ], size='sm', variant='left-bar', color='blue',height=400)
         #st.write(menus)
     with tools:
-        #try:
+        try:
             st.markdown(tools_dec[menus]['dec'])
             if not tools_dec[menus]['type'] == "None":
                 #st.link_button(label="跳转",url=tools_dec[menus]['url'],use_container_width=True)
                 showtools(label="打开",uri=tools_dec[menus]['url'])
-        #except:
-        #    st.info("未找到关于该工具的介绍")
+        except:
+            st.info("未找到关于该工具的介绍")
 
 with tab4:
     with st.spinner("加载中..."):
@@ -724,7 +725,7 @@ with tab4:
     setting1, setting2 = st.columns([0.15,0.85])
     with setting1:
         with st.popover(":material/aspect_ratio: 显示设置",use_container_width=True):
-            beautiful = st.toggle(":material/poll: 整齐排版", value=didnt_error,help='通过相关处理来使总体卡片整齐排列；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
+            beautiful = st.toggle(":material/poll: 整齐排版", value=didnt_error,help='通过相关处理来使卡片总体整齐排列；如果开启后无法找到需要内容，可关闭此选项或使用搜索')
             security = st.toggle(":material/vpn_lock: http加密显示", value=True,help='显示目标页面所使用的http连接是否加密')
             jump_security = st.toggle(":material/security: 安全模式", value=True,help='在跳转前对目标网站进行SSL证书检查')
     with setting2:
@@ -860,7 +861,7 @@ with tab6:
 8、 侮辱或者诽谤他人，侵害他人合法权益的  
 9、 含有法律、行政法规禁止的其他内容的''')
                 with st.expander("《ParrotNav网址投稿规定》",icon=":material/bookmark:"):
-                    st.markdown('''在站点遵守《互联网信息服务管理办法》时按照以下审核：  
+                    st.markdown('''在站点遵循《互联网信息服务管理办法》时按照以下审核：  
 1、 站点页面不得包含、插入恶意代码  
 2、 站点不得包含大量盈利内容（广告占屏面积不超过30%）  
 3、 站点不采用ip直链（访问链接不为ipv4或ipv6）  
@@ -912,7 +913,7 @@ squirrel963（github）
         with st.container(border=True):
             st.markdown('''##### 免责声明
 本站点仅提供第三方网页跳转及工具服务  
-本身不存储任何用户信息及服务用数据  
+本身不收集任何用户信息及服务用数据  
 数据均来自第三方，与本站无关''')
         if st.button(":material/share: 分享该站点！",use_container_width=True):
             share()
