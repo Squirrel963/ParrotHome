@@ -294,6 +294,7 @@
 "Steam清单生成": {
 	"url": "https://steam.assiw.xyz/",
 	"description": "为Steam appid生成清单"
-},
 }
+}
+
 
