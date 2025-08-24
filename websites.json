@@ -290,5 +290,10 @@
 "Steam创意工坊下载器": {
 	"url": "https://steamworkshopdownloader.io",
 	"description": "将Steam创意工坊链接转换为SteamCmd命令"
+},
+"Steam清单生成": {
+	"url": "https://steam.assiw.xyz/",
+	"description": "为Steam appid生成清单"
+},
 }
-}
+
